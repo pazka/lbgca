@@ -1,0 +1,25 @@
+﻿{
+  "products" : [
+    {
+      "name" : "Couilles Pleines",
+      "description" : "",
+      "images" : ["/cp/1.jpg"]
+    },
+    {
+      "name" : "Demi Avocat",
+      "description" : "",
+      "images" : ["/da/1.jpg"]
+    },
+    {
+      "name" : "Socle de stabilité",
+      "description" : "",
+      "images" : ["/ss/1.jpg"]
+    }
+  ],
+  "colors" : [
+    "black",
+    "white",
+    "gold",
+    "transparent"
+  ]
+}
