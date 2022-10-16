@@ -3,7 +3,7 @@ import os
 
 SERVER_NAME = "dev.localhost:8080"
 SESSION_COOKIE_DOMAIN = "dev.localhost"
-SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = False
 
 CORS_HEADERS = 'Content-Type'
