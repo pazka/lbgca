@@ -107,7 +107,7 @@ def confirm_order(order_id):
     return validate_order(order_id, request.json['value'])
 
 
-@app.route("/order", methods=["GET"])
+@app.route("/orders", methods=["GET"])
 def fetch_orders():
     return get_orders()
 

@@ -27,8 +27,8 @@ class User(db.Model):
     username = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
     avatar = db.Column(db.LargeBinary(), nullable=True)
-    role = db.Column(db.Text, default="user",nullable=False)
-    orders = db.relationship('Order', backref=db.backref('user', lazy=True))
+    role = db.Column(db.Text, default="user", nullable=False)
+    basket = db.relationship('Order')
 
     def as_dict(self, includes=None):
         res = to_json(self, includes)
@@ -39,14 +39,16 @@ class User(db.Model):
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product = db.Column(db.String(80), unique=False, nullable=False)
-    amount = db.Column(db.Integer,default=1)
-    variant = db.Column(db.String(100),nullable=False)
-    validated = db.Column(db.Integer,default=0)
+    amount = db.Column(db.Integer, default=1)
+    variant = db.Column(db.String(100), nullable=False)
+    validated = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship("User", back_populates="basket")
 
     def as_dict(self, includes=None):
         res = to_json(self, includes)
+        res['user'] = self.user.as_dict()
         return res
 
 

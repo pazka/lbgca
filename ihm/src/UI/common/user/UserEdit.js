@@ -1,15 +1,17 @@
 ﻿import {useEffect, useState} from "react";
 import {apiGetUserProfile, apiPostUserProfile} from "../../../services/rest-com/endpoints/userEndpoints";
 import {Button, Input} from "@mui/material";
-import useSession from "../../../utils/useSession";
 import {Uint8ToString} from "../../../utils/uint8arrayToBase64";
 import Base64Avatar from "./Base64Avatar";
+import {useDispatch, useSelector} from "react-redux";
+import {tryLogoutEffect} from "../../../StateManagement/userEffects";
 
 export default function UserEdit({userId}) {
     const [user, setUser] = useState({})
     const [newAvatar, setNewAvatar] = useState()
     const [error, setError] = useState()
-    const [session, tryLogin, trySignup, tryLogout] = useSession()
+    const session = useSelector(store => store.userSlice)
+    const dispatch = useDispatch()
 
     useEffect(() => {
         if (userId) {
@@ -54,7 +56,7 @@ export default function UserEdit({userId}) {
 
     return <div>
 
-        <Button color="secondary" onClick={x => tryLogout()}>Logout</Button>
+        <Button color="secondary" onClick={x => dispatch(tryLogoutEffect())}>Logout</Button>
         <div style={{display: "flex"}}>
             <Base64Avatar base64Avatar={newAvatar ?? user.avatar} text={user.username}/>
             <Input onChange={fileUploaded} type="file" id="file-input" title={"Upload new Avatar"}/>

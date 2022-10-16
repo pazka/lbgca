@@ -1,4 +1,4 @@
-from flask import session
+from flask import session, jsonify
 from flask_session import Session
 
 from models import User, db, Order
@@ -149,10 +149,10 @@ def get_user_orders(user_id):
         raise ClientKnownError("No user found")
 
     all_orders = list(map(lambda x: x.as_dict(), user.orders))
-    return all_orders
+    return jsonify(all_orders)
 
 
 def get_orders():
     orders = Order.query.all()
     all_orders = list(map(lambda x: x.as_dict(), orders))
-    return all_orders
+    return jsonify(all_orders)

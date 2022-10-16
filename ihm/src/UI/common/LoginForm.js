@@ -1,6 +1,8 @@
 ﻿import {Button, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
 import {useState} from "react";
-import useSession from "../../utils/useSession";
+
+import {useDispatch, useSelector} from "react-redux";
+import {tryLoginEffect} from "../../StateManagement/userEffects";
 
 const isFormValid = (form) => {
     const errors = {}
@@ -12,7 +14,8 @@ const isFormValid = (form) => {
 }
 
 export default function LoginForm({onClose = x => x}) {
-    const [session, tryLogin, trySignup] = useSession()
+    const session = useSelector(store => store.userSlice)
+    const dispatch = useDispatch()
     const [isSignup, setIsSignup] = useState(false)
     const [form, setForm] = useState({})
     const [errors, setErrors] = useState({})
@@ -29,9 +32,7 @@ export default function LoginForm({onClose = x => x}) {
             return
         }
 
-        tryLogin(form.login, "nopassword").catch(
-            err => setErrors({login: err.error})
-        )
+        dispatch(tryLoginEffect(form.login, "nopassword"))
 
         onClose()
     }
@@ -50,7 +51,7 @@ export default function LoginForm({onClose = x => x}) {
             />
         </DialogContent>
         <DialogActions>
-            <Button onClick={x => sendForm()}>{isSignup ? "Signup" : "Login"} </Button>
-            <Button color={"secondary"} onClick={onClose}>Close</Button>
+            <Button variant={"contained"} onClick={x => sendForm()}>{isSignup ? "Signup" : "Login"} </Button>
+            <Button variant={"contained"} color={"secondary"} onClick={onClose}>Close</Button>
         </DialogActions></>
 }

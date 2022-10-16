@@ -1,19 +1,24 @@
 ﻿import * as React from 'react';
-import {Paper} from "@mui/material";
+import {Paper, useTheme} from "@mui/material";
 
 export default function Footer() {
+    const theme = useTheme()
     return (
         <footer style={{marginTop: '5em'}}>
             <Paper style={{
-                margin : "auto",
+                margin: "auto",
                 padding: '1em',
                 color: "white",
-                backgroundColor: "#1976d2",
+                backgroundColor: theme.palette.primary.main,
                 width: "50%",
                 display: "flex",
                 flexWrap: "wrap"
             }}>
-                <pre>This website is only here to make our life easier in the process of creating dozen of testicle-based product. No money can be sent here.</pre>
+                <p>
+                    Ce site web n'est là que pour nous "faciliter" la vie dans le processus de création d'une douzaine de produits à base de testicules.
+                    <br/>
+                    On ne peut pas dépenser d'argent ici (mais le matériel coûte cher).
+                </p>
             </Paper>
         </footer>
     );

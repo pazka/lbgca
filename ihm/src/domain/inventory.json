@@ -1,0 +1,56 @@
+﻿{
+  "products": [
+    {
+      "name": "Couilles Pleines",
+      "description": ["Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque interdum nunc vel ligula sodales, nec auctor lorem gravida. Sed porta venenatis justo a rhoncus. Nulla eu dignissim nisi. "],
+      "images": [
+        "url(phototest.jpg)"
+      ],
+      "variants": [
+        "Creusé",
+        "Remplis"
+      ]
+    },
+    {
+      "name": "Demi Avocat",
+      "description": [""],
+      "images": [
+        "url(phototest.jpg)"
+      ],
+      "variants": [
+        "Creusé",
+        "Remplis"
+      ]
+    },
+    {
+      "name": "Socle de stabilité",
+      "description": [""],
+      "images": [
+        "url(phototest.jpg)"
+      ]
+    }
+  ],
+  "globalVariants": [
+    {
+      "name": "Plâtre",
+      "colors": [
+        "Blanc",
+        "Or"
+      ]
+    },
+    {
+      "name": "Résine",
+      "colors": [
+        "Or",
+        "Transparent"
+      ]
+    },
+    {
+      "name": "Silicone",
+      "colors": [
+        "Blanc",
+        "Or"
+      ]
+    }
+  ]
+}
