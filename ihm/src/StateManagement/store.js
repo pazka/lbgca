@@ -1,11 +1,13 @@
 ﻿import {configureStore} from '@reduxjs/toolkit'
-import {basketSlice} from "./basketSlice";
+import basketSlice from "./basketSlice";
 import userSlice from "./userSlice";
+import displaySlice from "./displaySlice";
 
 export const store = configureStore({
     reducer: {
         basketSlice,
-        userSlice
+        userSlice,
+        displaySlice
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({

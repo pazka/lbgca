@@ -2,31 +2,40 @@
   "products": [
     {
       "name": "Couilles Pleines",
-      "description": ["Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque interdum nunc vel ligula sodales, nec auctor lorem gravida. Sed porta venenatis justo a rhoncus. Nulla eu dignissim nisi. "],
+      "description": [
+        "Ce parfait réplicat de taille et de qualité supérieure offre l'élément de décoration décalé dont vous avez toujours rêvé.",
+        "Le volume conséquent de ces joyaux permet son utilisation comme pot de fleur, pouvant acceuillir jusqu'à deux succulentes dans le même pot (option creusé)",
+        "Une variété de matières et couleurs permetterons de trouver la combinaison parfaite pour intégrer ces boules dans votre intéreur avec goût."
+      ],
       "images": [
-        "url(phototest.jpg)"
+        "p1.jpg"
       ],
       "variants": [
         "Creusé",
-        "Remplis"
+        "Rempli"
       ]
     },
     {
       "name": "Demi Avocat",
-      "description": [""],
+      "description": [
+        "Le processus de moulage ayant été effectué à froid, les détails et sillons offerts par cette humble sculpture étonnerons autant qu'il fascinerons",
+        "Plus discret et applatit, le \"Demi Avocat\" peut s'utiliser comme presse-papier, pot de succulentes, cendrier, ou tout autre fonctionnalité que sa possession vous inspirera."
+      ],
       "images": [
-        "url(phototest.jpg)"
+        "p2.jpg"
       ],
       "variants": [
         "Creusé",
-        "Remplis"
+        "Rempli"
       ]
     },
     {
       "name": "Socle de stabilité",
-      "description": [""],
+      "description": [
+        ""
+      ],
       "images": [
-        "url(phototest.jpg)"
+        "p3.jpg"
       ]
     }
   ],

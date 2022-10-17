@@ -1,4 +1,4 @@
-﻿import {getData, postData, putData} from "../rest";
+﻿import {deleteData, getData, postData, putData} from "../rest";
 
 export function apiGetAllOrders() {
     return getData('/orders')
@@ -10,14 +10,19 @@ export function apiCreateOrder(product, amount, variant) {
     })
 }
 
+export function apiDeleteOrder(orderid) {
+    return deleteData('/order/' + orderid, null, null)
+}
+
+
 export function apiEditOrder(id, amount, variant) {
     return postData('/order/' + id, null, {
         amount, variant
     })
 }
 
-export function apiConfirmOrder(id, value) {
-    return postData('/order/' + id + "/confirm", null, {
+export function apiConfirmUserBasket(value) {
+    return postData('/order/validate', null, {
         value
     })
 }

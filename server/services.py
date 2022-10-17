@@ -24,7 +24,7 @@ def check_role(role):
         raise ClientKnownError('User is not ' + role)
 
 
-def create_account_if_not_exist(login,password):
+def create_account_if_not_exist(login, password):
     if User.query.filter_by(username=login).first() is not None:
         return False
 
@@ -44,12 +44,15 @@ def create_account(login, password):
     return success_response()
 
 
-def edit_account(new_user):
+def edit_account(user_edited):
     user = User.query.filter_by(id=session['userid']).first()
     if user is None:
         raise ClientKnownError("User dosen't exist")
 
-    user.avatar = str.encode(new_user['avatar'])
+    if user_edited['avatar'] is not None:
+        user.avatar = str.encode(user_edited['avatar'])
+    if user_edited['comment'] is not None:
+        user.comment = str.encode(user_edited['comment'])
     db.session.commit()
     return user.as_dict()
 
@@ -110,14 +113,18 @@ def create_order(product, amount, variant):
     return success_response(order.as_dict())
 
 
-def validate_order(order_id, value):
-    order = Order.query.filter_by(id=order_id)
-    if order is None:
-        raise ClientKnownError("No order found")
+def validate_order(value):
+    user = User.query.filter_by(id=session['userid']).first()
+    if user is None:
+        raise ClientKnownError("No user found")
+    orders = Order.query.filter_by(user_id=user.id).all()
 
-    order.validated = value
+    for order in orders:
+        order.validated = value
+
     db.session.commit()
-    return success_response(order.as_dict())
+    all_orders = list(map(lambda x: x.as_dict(), orders))
+    return success_response(all_orders)
 
 
 def edit_order(order_id, amount, variant):
@@ -134,11 +141,17 @@ def edit_order(order_id, amount, variant):
 
 
 def delete_order(order_id):
-    order = Order.query.filter_by(id=order_id)
+    order = Order.query.filter_by(id=order_id).first()
     if order is None:
         raise ClientKnownError("No order found")
+    user = User.query.filter_by(id=session['userid']).first()
+    if user is None:
+        raise ClientKnownError("No user found")
 
-    order.delete()
+    if order.user_id != session['userid']:
+        raise ClientKnownError("Not your order")
+
+    db.session.delete(order)
     return success_response()
 
 

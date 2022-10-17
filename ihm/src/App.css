@@ -1,14 +1,98 @@
-
-
-.order-page{
+.main-frame {
+    width: min(1000px, 100%);
+    margin: auto;
+    border-width: 6em;
+    border-style: solid;
+    border-image: url("img/grass-border-gradient.jpg")  30% round;
 }
 
-.order-page .content{
-     display : flex;
-     flex-wrap: wrap;
- }
+.order-page {
+}
+
+.order-page .content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
 
 .product-display {
     margin: 1em;
-    width : max(30%,200px)
+    width: clamp(200px, 30%, 400px);
+}
+
+.logo {
+    width: 200px;
+    height: 200px;
+    background-image: url("img/oeuf_petit_left.png");
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+    transition: all 0.5s;
+}
+
+.logo:hover {
+    background-image: url("img/oeuf_gros_left.png");
+    transition: all 0.5s;
+}
+
+.small-logo-parent{
+    display: flex;
+    align-items: center;
+}
+
+.small-logo {
+    width: 50px;
+    height: 50px;
+    background-image: url("img/small_oeuf_petit_left.png");
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: contain; /* Resize the background image to cover the entire container */
+    transition: all 0.5s;
+}
+
+.small-logo-parent:hover .small-logo {
+    background-image: url("img/small_oeuf_gros_left.png");
+    transition: all 0.5s;
+}
+
+.text-logo {
+    width: min(100%, 800px);
+    height: max(10vh, 50px);
+    background-image: url("img/text.png");
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: contain; /* Resize the background image to cover the entire container */
+}
+
+.header{
+    background-image: url("img/vichy_small.png");
+    background-repeat: repeat;
+    width: min(1000px,100%);
+    margin: auto;
+}
+
+.parent-cover {
+    width: 100%;
+    height: auto;
+}
+
+
+.image-cover {
+    filter: opacity(40%);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: contain; /* Resize the background image to cover the entire container */
+    z-index: -2;
+}
+
+
+.inner-cover {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    align-items: center;
+    filter: none;
 }

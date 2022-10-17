@@ -7,7 +7,7 @@ from flask_cors import CORS
 from models import init_db, prepare_db
 from services import init_services, create_account, create_session, remove_session, fetch_session, check_session, \
     fetch_current_user, fetch_user, fetch_session_nb, edit_account, create_order, get_user_orders, get_orders, \
-    validate_order, edit_order, create_account_if_not_exist
+    validate_order, edit_order, create_account_if_not_exist, delete_order
 from utils import ServerKnownError, ClientKnownError
 
 logging.getLogger('flask_cors').level = logging.DEBUG
@@ -97,14 +97,20 @@ def post_create_order():
     return create_order(request.json['product'], request.json['amount'], request.json['variant'])
 
 
+@app.route("/order/<int:order_id>", methods=["DELETE"])
+def api_delete_order(order_id):
+    check_session()
+    return delete_order(order_id)
+
+
 @app.route("/order/<int:order_id>", methods=["POST"])
 def post_edit_order(order_id):
     return edit_order(order_id, request.json['amount'], request.json['variant'])
 
 
-@app.route("/order/<int:order_id>/confirm", methods=["POST"])
-def confirm_order(order_id):
-    return validate_order(order_id, request.json['value'])
+@app.route("/order/validate", methods=["POST"])
+def confirm_order():
+    return validate_order(request.json['value'])
 
 
 @app.route("/orders", methods=["GET"])

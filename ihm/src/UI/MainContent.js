@@ -5,6 +5,9 @@ import LoginForm from "./common/LoginForm";
 import OrderPage from "./page/OrderPage";
 import {useSelector} from "react-redux";
 import {Box} from "@mui/material";
+import * as React from "react";
+import MyBasketPage from "./page/MyBasketPage";
+import ValidatedBasketsPage from "./page/ValidatedBasketsPage";
 
 const MainContent = () => {
     const session = useSelector(store => store.userSlice)
@@ -18,17 +21,16 @@ const MainContent = () => {
         </Box>
     }
 
-    return <>
-        <Box sx={{
-            width: "min(1000px,100%)",
-            margin: "auto"
-        }}>
+    return <div className={"app-content"}>
+        <Box className={"main-frame"}>
             <Routes>
                 <Route path="/" element={<OrderPage/>}/>
+                <Route path="/all" element={<ValidatedBasketsPage/>}/>
                 <Route path="/user/:id" element={<UserPage/>}/>
+                <Route path="/myBasket" element={<MyBasketPage/>}/>
             </Routes>
         </Box>
-    </>
+    </div>
 }
 
 export default MainContent

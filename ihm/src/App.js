@@ -5,20 +5,24 @@ import Footer from "./UI/common/Footer";
 import {useEffect} from "react";
 import {useDispatch} from "react-redux";
 import {initInventory} from "./StateManagement/initEffects";
+import {Box} from "@mui/material";
+import * as React from "react";
 
 function App() {
     const dispatch = useDispatch()
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         dispatch(initInventory())
     })
-    
-    return (
-            <div>
+
+    return (<>
+            <Box>
                 <Header/>
                 <MainContent/>
                 <Footer/>
-            </div>
+            </Box>
+
+        </>
     );
 }
 

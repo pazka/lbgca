@@ -26,6 +26,16 @@ let theme = createTheme({
             dark: '#73ADD6'
         },
     },
+    components: {
+        // Name of the component
+        MuiInputLabel: {
+            styleOverrides : {
+                root :{
+                    color: '#222222'
+                }
+            }
+        },
+    },
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

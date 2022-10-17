@@ -2,6 +2,7 @@
 import {apiGetUserProfile} from "../services/rest-com/endpoints/userEndpoints";
 import {updateSession} from "./userSlice";
 import {initInventory} from "./initEffects";
+import {getMyBasketEffect} from "./basketEffects";
 
 export const initUser = () => async (dispatch, getState) => {
     const res = await apiGetSession()
@@ -13,6 +14,7 @@ export const initUser = () => async (dispatch, getState) => {
 const completeUserProfileEffect = (newSession) => async (dispatch, getState) => {
     const res = await apiGetUserProfile(newSession['username']).catch(r => r)
     dispatch(updateSession({...newSession, profile: res}))
+    dispatch(getMyBasketEffect())
 }
 
 export const tryLoginEffect = (login, password) => async (dispatch, getState) => {
@@ -24,7 +26,6 @@ export const tryLoginEffect = (login, password) => async (dispatch, getState) =>
     }
 
     dispatch(completeUserProfileEffect(res))
-    dispatch(initInventory())
 }
 
 export const tryLogoutEffect = () => async (dispatch, getState) => {

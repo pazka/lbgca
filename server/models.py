@@ -29,6 +29,7 @@ class User(db.Model):
     avatar = db.Column(db.LargeBinary(), nullable=True)
     role = db.Column(db.Text, default="user", nullable=False)
     basket = db.relationship('Order')
+    comment = db.Column(db.String(1500), nullable=True)
 
     def as_dict(self, includes=None):
         res = to_json(self, includes)

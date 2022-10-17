@@ -2,7 +2,7 @@
 import type {PayloadAction} from '@reduxjs/toolkit'
 
 export interface BasketState {
-    basket: Product[],
+    basket: Order[],
     orders: Order[]
 }
 
