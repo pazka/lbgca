@@ -52,7 +52,7 @@ function MyBasketPage({}) {
             </Button>
         </Tooltip>}
         <br/>
-        {basket[0].validated ? <Box>
+        {basket[0]?.validated ? <Box>
             <TextField
                 value={comment}
                 onChange={e => setComment(e.target.value)}

@@ -20,7 +20,7 @@ const completeUserProfileEffect = (newSession) => async (dispatch, getState) => 
 export const tryLoginEffect = (login, password) => async (dispatch, getState) => {
     const res = await apiLogin(login, password).catch(err => null)
 
-    if (res.error) {
+    if (!res) {
         dispatch(updateSession({}))
         return
     }
@@ -35,9 +35,9 @@ export const tryLogoutEffect = () => async (dispatch, getState) => {
 }
 
 export const trySignupEffect = (login, password) => async (dispatch, getState) => {
-    const res = await apiSignup(login, password).catch(r => r)
+    const res = await apiSignup(login, password).catch(r => null)
 
-    if (res.error) {
+    if (!res) {
         return
     }
 

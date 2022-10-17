@@ -124,7 +124,7 @@ def validate_order(value):
 
     db.session.commit()
     all_orders = list(map(lambda x: x.as_dict(), orders))
-    return success_response(all_orders)
+    return jsonify(all_orders)
 
 
 def edit_order(order_id, amount, variant):

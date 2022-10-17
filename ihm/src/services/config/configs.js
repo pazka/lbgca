@@ -7,7 +7,7 @@
     PROD: {
         name: "PROD",
         debug: false,
-        baseUrl: "https://lesbonnesgrossescouillesdalex.store"
+        baseUrl: "https://api.lesbonnesgrossescouillesdalex.store"
     }
 })
 
