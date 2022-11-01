@@ -1,0 +1,7 @@
+services:
+  lbgca:
+    build: .
+    volumes:
+      - ./static:/app/static
+    ports:
+      - "6547:6547"

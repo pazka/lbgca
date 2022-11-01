@@ -1,7 +1,5 @@
 import os
 
-SERVER_NAME = "LBGCA"
-HOST = "0.0.0.0"
 # Grabs the folder where the script runs.
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -9,7 +7,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 DEBUG = False
 
 # Enable debug mode.
-PORT = 80
+PORT = 6547
+SERVER_NAME = "localhost:" + str(PORT)
+HOST = "localhost:" + str(PORT)
 
 # Secret key for session management. You can generate random strings here:
 # https://randomkeygen.com/
@@ -22,5 +22,5 @@ SESSION_PERMANENT = False
 SESSION_TYPE = 'sqlalchemy'
 PERMANENT_SESSION_LIFETIME = 60 * 60
 
-SMALL_FILE_SIZE_LIMIT = 20 * 1000   # 1 000 = 1ko
+SMALL_FILE_SIZE_LIMIT = 20 * 1000  # 1 000 = 1ko
 FILE_SIZE_LIMIT = 1 * 1000 * 1000  # 1 000 000 = 1Mo

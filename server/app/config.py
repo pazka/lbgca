@@ -1,7 +1,8 @@
 import datetime
 import os
 
-SERVER_NAME = "dev.localhost:8080"
+PORT = 8080
+SERVER_NAME = "dev.localhost:" + str(PORT)
 SESSION_COOKIE_DOMAIN = "dev.localhost"
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = False
@@ -13,9 +14,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Enable debug mode.
 DEBUG = True
-
-# Enable debug mode.
-PORT = 8080
 
 # Secret key for session management. You can generate random strings here:
 # https://randomkeygen.com/
