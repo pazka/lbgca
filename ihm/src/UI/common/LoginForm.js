@@ -52,6 +52,5 @@ export default function LoginForm({onClose = x => x}) {
         </DialogContent>
         <DialogActions>
             <Button variant={"contained"} onClick={x => sendForm()}>{isSignup ? "Signup" : "Login"} </Button>
-            <Button variant={"contained"} color={"secondary"} onClick={onClose}>Close</Button>
         </DialogActions></>
 }

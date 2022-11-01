@@ -8,7 +8,15 @@
         "Une variété de matières et couleurs permetterons de trouver la combinaison parfaite pour intégrer ces boules dans votre intéreur avec goût."
       ],
       "images": [
-        "p1.jpg"
+        "p1/1.jpg",
+        "p1/2.jpg",
+        "p1/3.jpg",
+        "p1/4.jpg",
+        "p1/5.jpg",
+        "p1/6.jpg",
+        "p1/7.jpg",
+        "p1/8.jpg",
+        "p1/9.jpg"
       ],
       "variants": [
         "Creusé",
@@ -22,7 +30,9 @@
         "Plus discret et applatit, le \"Demi Avocat\" peut s'utiliser comme presse-papier, pot de succulentes, cendrier, ou tout autre fonctionnalité que sa possession vous inspirera."
       ],
       "images": [
-        "p2.jpg"
+        "p2/1.jpg",
+        "p2/2.jpg",
+        "p2/3.jpg"
       ],
       "variants": [
         "Creusé",
@@ -35,11 +45,20 @@
         ""
       ],
       "images": [
-        "p3.jpg"
+        "p3/1.jpg",
+        "p3/2.jpg",
+        "p3/3.jpg",
+        "p3/4.jpg"
       ]
     }
   ],
   "globalVariants": [
+    {
+      "name": "Cire (Bougie)",
+      "colors": [
+        "Blanc"
+      ]
+    },
     {
       "name": "Plâtre",
       "colors": [
@@ -48,14 +67,14 @@
       ]
     },
     {
-      "name": "Résine",
+      "name": "Résine (Pot de Fleur)",
       "colors": [
         "Or",
         "Transparent"
       ]
     },
     {
-      "name": "Silicone",
+      "name": "Silicone (stressball)",
       "colors": [
         "Blanc",
         "Or"

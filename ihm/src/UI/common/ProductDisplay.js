@@ -1,13 +1,18 @@
 ﻿import {withErrorCaught} from "../../utils/withErrorCaught";
 import {useState} from "react";
 import {
+    Box,
     Button,
     Card,
     CardActions,
     CardContent,
     CardHeader,
     CardMedia,
+    Dialog,
+    DialogActions,
+    DialogContent,
     FormControl,
+    IconButton,
     InputLabel,
     MenuItem,
     Select,
@@ -15,7 +20,7 @@ import {
     useTheme
 } from "@mui/material";
 import inventory from "../../domain/inventory.json"
-import {AddShoppingCart} from "@mui/icons-material";
+import {AddShoppingCart, ArrowCircleLeft, ArrowCircleRight, ZoomIn} from "@mui/icons-material";
 import {useDispatch, useSelector} from "react-redux";
 import {addOrderToBasketEffect} from "../../StateManagement/basketEffects";
 
@@ -34,10 +39,11 @@ function ProductDisplay(
     const [currVariant, setCurrVariant] = useState(inventory.globalVariants[0].name)
     const [currOption, setCurrOption] = useState((product.variants ?? [])[0])
     const [currVariantColor, setCurrVariantColor] = useState(inventory.globalVariants[0].colors[0])
+    const [isZoom, setIsZoom] = useState(false)
     const dispatch = useDispatch()
     const theme = useTheme()
 
-    const setNewVariant = (variantName) => {
+    const handleSetNewVariant = (variantName) => {
         const variant = inventory.globalVariants.find(v => v.name === variantName)
         if (!variant.colors.includes(currVariantColor)) {
             setCurrVariantColor(variant.colors[0])
@@ -45,11 +51,34 @@ function ProductDisplay(
         setCurrVariant(variant.name)
     }
 
-    const addProductToBasket = () => {
+    const handleChangeVariant = (amount) => e => {
+        let newIndex = currImgIndex + amount
+        newIndex < 0 && (newIndex = (product.images.length - 1))
+        newIndex >= product.images.length && (newIndex = 0)
+
+        setCurrImgIndex(newIndex)
+    }
+
+    const handleAddProductToBasket = () => {
         dispatch(addOrderToBasketEffect(product, inventory.globalVariants.find(v => v.name === currVariant), currVariantColor, currOption))
     }
 
     return <div className={"product-display"}>
+        <Dialog maxWidth open={isZoom} onClose={x => setIsZoom(!isZoom)}>
+            <DialogContent>
+                <img style={{width: "auto", height: "80vh"}} src={product.images[currImgIndex]}
+                     alt="product image zoomed"/>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleChangeVariant(-1)}>
+                    <ArrowCircleLeft/>
+                </Button>
+                <Button onClick={handleChangeVariant(+1)}>
+                    <ArrowCircleRight/>
+                </Button>
+                <Button color={"secondary"} variant={"contained"} onClick={x => setIsZoom(!isZoom)}> Fermer</Button>
+            </DialogActions>
+        </Dialog>
         <Card>
             <CardHeader
                 sx={{
@@ -62,7 +91,7 @@ function ProductDisplay(
                         variant={"contained"}
                         color="secondary"
                         aria-label="order"
-                        onClick={x => addProductToBasket()}
+                        onClick={x => handleAddProductToBasket()}
                     >
                         <AddShoppingCart/>
                     </Button>) : <div></div>
@@ -78,6 +107,27 @@ function ProductDisplay(
                 alt={product.name + " photo"}
             />
             <CardContent>
+                <Box sx={{
+                    position: "absolute"
+                }}>
+                    <Box sx={{
+                        position: "absolute",
+                        top: "-8em",
+                        "&>*": {
+                            boxShadow: "rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;"
+                        }
+                    }}>
+                        <IconButton size={"small"} color={"primary"} onClick={handleChangeVariant(-1)}>
+                            <ArrowCircleLeft/>
+                        </IconButton>
+                        <IconButton size={"small"} color={"primary"} onClick={handleChangeVariant(+1)}>
+                            <ArrowCircleRight/>
+                        </IconButton>
+                        <IconButton size={"small"} color={"primary"} onClick={x => setIsZoom(!isZoom)}>
+                            <ZoomIn/>
+                        </IconButton>
+                    </Box>
+                </Box>
                 {product.description.map((desc, i) => <Typography
                     sx={{marginBottom: '0.5em'}}
                     variant="body2"
@@ -104,7 +154,7 @@ function ProductDisplay(
                         id="generalVariant"
                         value={currVariant}
                         label="generalVariant"
-                        onChange={e => setNewVariant(e.target.value)}
+                        onChange={e => handleSetNewVariant(e.target.value)}
                     >
                         {inventory.globalVariants.map((variant: Variant, i) => (
                             <MenuItem key={i} value={variant.name}>{variant.name}</MenuItem>

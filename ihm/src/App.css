@@ -1,9 +1,34 @@
+/* width */
+body::-webkit-scrollbar {
+    width: 15px;
+}
+
+/* Track */
+body::-webkit-scrollbar-track {
+    background: #73ADD6;
+}
+
+/* Handle */
+body::-webkit-scrollbar-thumb {
+    background: #D371AA;
+    border-radius: 1em;
+}
+
+/* Handle on hover */
+body::-webkit-scrollbar-thumb:hover {
+    background: #A12C71;
+}
+
 .main-frame {
     width: min(1000px, 100%);
     margin: auto;
+    __box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    background-color: white;
+
     border-width: 6em;
     border-style: solid;
-    border-image: url("img/grass-border-gradient.jpg")  30% round;
+    background-clip: padding-box;
+    border-image: url("img/grass-transparent.png") 30% round;
 }
 
 .order-page {
@@ -35,7 +60,7 @@
     transition: all 0.5s;
 }
 
-.small-logo-parent{
+.small-logo-parent {
     display: flex;
     align-items: center;
 }
@@ -64,28 +89,49 @@
     background-size: contain; /* Resize the background image to cover the entire container */
 }
 
-.header{
+.header {
     background-image: url("img/vichy_small.png");
     background-repeat: repeat;
-    width: min(1000px,100%);
+    width: min(1000px, 100%);
     margin: auto;
 }
 
-.parent-cover {
+.full-cover {
+    height: fit-content;
     width: 100%;
+    z-index: -5;
+    position: absolute;
+    background-image: url("img/landing/fond_bleu_small_square.jpg");
+    background-position: initial; /* Center the image */
+    background-repeat: repeat; /* Do not repeat the image */
+    background-size: 10em; /* Resize the background image to cover the entire container */
+}
+
+.full-cover-content {
+}
+
+.full-covered-content {
+    z-index: 1;
+}
+
+.parent-parent-cover {
+    background-color: white;
+    width: min(1000px, 100%);
+    margin: auto;
+    border-width: 3em;
+    border-style: solid;
+    background-clip: padding-box;
+    border-image: url("img/grass-transparent.png") 30% round;
+
+}
+
+
+.parent-cover {
     height: auto;
 }
 
 
 .image-cover {
-    filter: opacity(40%);
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
-    background-size: contain; /* Resize the background image to cover the entire container */
-    z-index: -2;
 }
 
 
@@ -95,4 +141,41 @@
     position: relative;
     align-items: center;
     filter: none;
+}
+
+.descBlock {
+    display: flex;
+    padding: 2em;
+}
+
+.descBlock p {
+    flex: 0 1 auto;
+    font-size: 1.8em;
+    padding: 2em;
+}
+
+.imgDesc {
+    flex: 1 0 auto;
+    width: 66%;
+    height: auto;
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+    transition: all 0.5s;
+}
+
+#descImg1 {
+    background-image: url("img/landing/texture_zoom.jpg");
+}
+
+#descImg2 {
+    background-image: url("img/landing/dual.jpg");
+}
+
+#descImg3 {
+    background-image: url("img/landing/profil.jpg");
+}
+
+#descImg4 {
+    background-image: url("img/landing/all.jpg");
 }

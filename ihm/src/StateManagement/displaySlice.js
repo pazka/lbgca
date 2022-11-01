@@ -5,7 +5,7 @@ export interface DisplayState {
 }
 
 const initialState: DisplayState = {
-    noSpoil: true
+    noSpoil: false
 }
 
 export const displaySlice = createSlice({

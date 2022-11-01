@@ -1,7 +1,6 @@
 ﻿import {apiGetSession, apiLogin, apiLogout, apiSignup} from "../services/rest-com/endpoints/loginEndpoints";
 import {apiGetUserProfile} from "../services/rest-com/endpoints/userEndpoints";
 import {updateSession} from "./userSlice";
-import {initInventory} from "./initEffects";
 import {getMyBasketEffect} from "./basketEffects";
 
 export const initUser = () => async (dispatch, getState) => {
