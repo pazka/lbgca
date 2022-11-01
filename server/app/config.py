@@ -10,7 +10,9 @@ SESSION_COOKIE_SECURE = False
 CORS_HEADERS = 'Content-Type'
 HOST = "dev.localhost"
 # Grabs the folder where the script runs.
+print(__file__)
 basedir = os.path.abspath(os.path.dirname(__file__))
+print(basedir)
 
 # Enable debug mode.
 DEBUG = True
@@ -20,7 +22,9 @@ DEBUG = True
 SECRET_KEY = 'F9hnubP4mexPogIFBVEsFHIVpUpC6JxO'
 
 # Connect to the database
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'database.db')
+INIT_DATABASE_PATH = os.path.join(basedir, 'database/init_database.db')
+DATABASE_PATH = os.path.join(basedir, 'database/dev_database.db')
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_PATH
 
 SESSION_PERMANENT = True
 SESSION_TYPE = 'sqlalchemy'

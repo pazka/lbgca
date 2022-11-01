@@ -1,4 +1,5 @@
 ﻿import {Box} from "@mui/material";
+import {Link} from "react-router-dom";
 
 export default function HomePage({}) {
     return <Box>
@@ -8,8 +9,7 @@ export default function HomePage({}) {
         <Box className={"descBlock"}>
             <Box>
                 <p>
-                    Today, science tells us that the essence of nature is serenity. You and I are pilgrims of the
-                    dreamtime. We exist as meridians.
+                    Culminant l'expérience d'une artiste plasticienne internationale et 2 mois de travail, LBGCA™ vous propose l'apogée du monde sculptural
                 </p>
             </Box>
             <Box id="descImg1" className={"imgDesc"}>
@@ -20,18 +20,14 @@ export default function HomePage({}) {
             <Box id="descImg2" className={"imgDesc"}></Box>
             <Box>
                 <p>
-                    We are at a crossroads of learning and materialism. Reality has always been bursting with
-                    storytellers
-                    whose hearts are transformed into purpose. Who are we? Where on the great mission will we be
-                    awakened?
+                    Notre intention : vous proposer un Memento à la hauteur de vos richesses perdues
                 </p>
             </Box>
         </Box>
         <Box className={"descBlock"}>
             <Box>
                 <p>
-                    Soon there will be an invocation of beauty the likes of which the stratosphere has never seen. The
-                    future will be a psychic invocation of starfire. The stratosphere is approaching a tipping point.
+                    Résultant d'un processus impliquant alginate, silicone, plâtre, résine et peinture, nos nombreux essais ont aboutis à un détail plus vrai que nature
                 </p>
             </Box>
             <Box id="descImg3" className={"imgDesc"}>
@@ -43,10 +39,7 @@ export default function HomePage({}) {
             </Box>
             <Box>
                 <p>
-                    We are at a crossroads of learning and materialism. Reality has always been bursting with
-                    storytellers
-                    whose hearts are transformed into purpose. Who are we? Where on the great mission will we be
-                    awakened?
+                    Ce n'est donc pas une seule sculpture mais bien toute un gamme variée que LBGCA™ vous invite à découvrir dans notre section <Link to="/products">Les Oeufs du Magasin</Link>
                 </p>
             </Box>
         </Box>

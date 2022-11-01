@@ -18,10 +18,8 @@ if config.DEBUG is False:
 else:
     print("LBGCA SERVER IS DEBUG")
 
-app = Flask(__name__,
-            static_url_path='',
-            static_folder='static'
-            )
+app = Flask(__name__)
+
 app.config.from_object('config')
 cors = CORS(app, resources={
     "*": {

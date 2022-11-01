@@ -20,13 +20,15 @@ function update() {
         currentEnvironment = configs[queries.env.toUpperCase()]
 
         //case env is specified env constants
-    } else if (process.env.NODE_ENV === "development" || process.env.REACT_APP_STAGE !== "prod") {
+    } else if (process.env.NODE_ENV === "development") {
         currentEnvironment = configs.DEV
     } else {
         currentEnvironment = configs.PROD
     }
 
     console.info("I'm in env : ", currentEnvironment.name);
+    console.info("env : ", process.env.NODE_ENV);
+    console.info("envs : ", process.env.REACT_APP_STAGE);
 }
 
 
@@ -50,7 +52,7 @@ export function getBaseUrl() {
     const port = url[3] ?? ""
     const dynamicUrl = protocol + domain + port
 
-    return config.debug ? config.baseUrl : dynamicUrl
+    return config.baseUrl
 }
 
 update()

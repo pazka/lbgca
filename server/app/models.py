@@ -1,4 +1,6 @@
 import datetime
+import shutil
+from os import path
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -8,6 +10,8 @@ my_app = None
 
 def prepare_db(app):
     global my_app
+    if path.exists(app.config['DATABASE_PATH']) is False:
+        shutil.copyfile(app.config['INIT_DATABASE_PATH'], app.config['DATABASE_PATH'])
     my_app = app
     app.config['SESSION_SQLALCHEMY'] = db
     db.init_app(app)

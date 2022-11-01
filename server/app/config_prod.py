@@ -8,15 +8,17 @@ DEBUG = False
 
 # Enable debug mode.
 PORT = 6547
-SERVER_NAME = "localhost:" + str(PORT)
-HOST = "localhost:" + str(PORT)
+SERVER_NAME = "0.0.0.0:" + str(PORT)
+HOST = "0.0.0.0:" + str(PORT)
 
 # Secret key for session management. You can generate random strings here:
 # https://randomkeygen.com/
 SECRET_KEY = 'F9hnubP4mexPogIFBVEsFHIVpUpC6JxO'
 
 # Connect to the database
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'database.db')
+INIT_DATABASE_PATH = os.path.join(basedir, '/database/init_database.db')
+DATABASE_PATH = os.path.join(basedir, '/database/database.db')
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_PATH
 
 SESSION_PERMANENT = False
 SESSION_TYPE = 'sqlalchemy'

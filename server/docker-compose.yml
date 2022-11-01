@@ -3,5 +3,6 @@ services:
     build: .
     volumes:
       - ./static:/app/static
+      - ./database:/app/database
     ports:
       - "6547:6547"
