@@ -8,6 +8,12 @@ SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = False
 
 CORS_HEADERS = 'Content-Type'
+
+CORS_ORIGINS = [
+    "dev.localhost",
+    "localhost",
+    "127.0.0.1"
+]
 HOST = "dev.localhost"
 # Grabs the folder where the script runs.
 print(__file__)

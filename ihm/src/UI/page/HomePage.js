@@ -39,7 +39,7 @@ export default function HomePage({}) {
             </Box>
             <Box>
                 <p>
-                    Ce n'est donc pas une seule sculpture mais bien toute un gamme variée que LBGCA™ vous invite à découvrir dans notre section <Link to="/products">Les Oeufs du Magasin</Link>
+                    Ce n'est donc pas une seule sculpture mais bien toute une gamme variée que LBGCA™ vous invite à découvrir dans notre section <Link to="/products">Les Oeufs du Magasin</Link>
                 </p>
             </Box>
         </Box>

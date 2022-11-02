@@ -23,7 +23,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 cors = CORS(app, resources={
     "*": {
-        "origins": "*"
+        "origins": app.config["CORS_ORIGINS"]
     }
 }, supports_credentials=True)
 

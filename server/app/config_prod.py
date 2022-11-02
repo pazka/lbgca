@@ -9,6 +9,13 @@ DEBUG = False
 SERVER_NAME = "api.lesbonnesgrossescouillesdalex.store"
 HOST = "api.lesbonnesgrossescouillesdalex.store"
 
+CORS_ORIGINS = [
+    "lesbonnesgrossescouillesdalex.store",
+    "api.lesbonnesgrossescouillesdalex.store",
+    "www.lesbonnesgrossescouillesdalex.store"
+]
+CORS_SUPPORTS_CREDENTIALS = True
+
 # Secret key for session management. You can generate random strings here:
 # https://randomkeygen.com/
 SECRET_KEY = 'F9hnubP4mexPogIFBVEsFHIVpUpC6JxO'
