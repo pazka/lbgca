@@ -6,10 +6,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # Enable debug mode.
 DEBUG = False
 
-# Enable debug mode.
-PORT = 80
-SERVER_NAME = "0.0.0.0:" + str(PORT)
-HOST = "0.0.0.0:" + str(PORT)
+SERVER_NAME = "api.lesbonnesgrossescouillesdalex.store"
+HOST = "api.lesbonnesgrossescouillesdalex.store"
 
 # Secret key for session management. You can generate random strings here:
 # https://randomkeygen.com/
