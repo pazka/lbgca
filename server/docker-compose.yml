@@ -5,4 +5,4 @@ services:
       - ./static:/app/static
       - ./database:/app/database
     ports:
-      - "6547:80"
+      - "80:6547"
