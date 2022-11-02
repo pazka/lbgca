@@ -4,8 +4,7 @@ COPY ./app/requirements.txt /app
 
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-ENV LISTEN_PORT 6547
-EXPOSE 6547
+EXPOSE 80
 EXPOSE 443
 
 COPY ./app /app

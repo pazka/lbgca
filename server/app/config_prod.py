@@ -7,7 +7,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 DEBUG = False
 
 # Enable debug mode.
-PORT = 6547
+PORT = 80
 SERVER_NAME = "0.0.0.0:" + str(PORT)
 HOST = "0.0.0.0:" + str(PORT)
 
@@ -16,8 +16,8 @@ HOST = "0.0.0.0:" + str(PORT)
 SECRET_KEY = 'F9hnubP4mexPogIFBVEsFHIVpUpC6JxO'
 
 # Connect to the database
-INIT_DATABASE_PATH = os.path.join(basedir, '/database/init_database.db')
-DATABASE_PATH = os.path.join(basedir, '/database/database.db')
+INIT_DATABASE_PATH = os.path.join(basedir, 'database/init_database.db')
+DATABASE_PATH = os.path.join(basedir, 'database/database.db')
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_PATH
 
 SESSION_PERMANENT = False
