@@ -51,17 +51,17 @@ if not app.config['DEBUG']:
     app.register_error_handler(Exception, lambda e: handle_errors(ServerKnownError(str(e), ex=e)))
 
 
-@app.route("/api/")
+@app.route("/")
 def test():
     return "The app is running ! " + str(fetch_session_nb()) + " connected !"
 
 
-@app.route("/api/signup", methods=['POST'])
+@app.route("/signup", methods=['POST'])
 def signup():
     return create_account(request.json['login'], request.json['password'])
 
 
-@app.route("/api/session", methods=['GET', 'POST', 'DELETE'])
+@app.route("/session", methods=['GET', 'POST', 'DELETE'])
 def session():
     if request.method == 'POST':
         create_account_if_not_exist(request.json['login'], request.json['password'])
@@ -75,18 +75,18 @@ def session():
 ################ USER PROFILE ################
 
 
-@app.route("/api/user/<string:name>", methods=['GET'])
+@app.route("/user/<string:name>", methods=['GET'])
 def get_user(name):
     return fetch_user(name)
 
 
-@app.route("/api/user", methods=['GET'])
+@app.route("/user", methods=['GET'])
 def get_current_user():
     check_session()
     return fetch_current_user()
 
 
-@app.route("/api/user", methods=['POST'])
+@app.route("/user", methods=['POST'])
 def edit_user():
     check_session()
     return edit_account(request.json)
@@ -94,33 +94,33 @@ def edit_user():
 
 ################ ORDER ################
 
-@app.route("/api/order", methods=["POST"])
+@app.route("/order", methods=["POST"])
 def post_create_order():
     return create_order(request.json['product'], request.json['amount'], request.json['variant'])
 
 
-@app.route("/api/order/<int:order_id>", methods=["DELETE"])
+@app.route("/order/<int:order_id>", methods=["DELETE"])
 def api_delete_order(order_id):
     check_session()
     return delete_order(order_id)
 
 
-@app.route("/api/order/<int:order_id>", methods=["POST"])
+@app.route("/order/<int:order_id>", methods=["POST"])
 def post_edit_order(order_id):
     return edit_order(order_id, request.json['amount'], request.json['variant'])
 
 
-@app.route("/api/order/validate", methods=["POST"])
+@app.route("/order/validate", methods=["POST"])
 def confirm_order():
     return validate_order(request.json['value'])
 
 
-@app.route("/api/orders", methods=["GET"])
+@app.route("/orders", methods=["GET"])
 def fetch_orders():
     return get_orders()
 
 
-@app.route("/api/user/<int:user_id>/orders", methods=["GET"])
+@app.route("/user/<int:user_id>/orders", methods=["GET"])
 def fetch_users_orders(user_id):
     return get_user_orders(user_id)
 

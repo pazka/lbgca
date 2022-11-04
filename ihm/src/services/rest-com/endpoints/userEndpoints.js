@@ -2,17 +2,17 @@ import {getData, postData} from "../rest";
 
 
 export async function apiGetUserProfile(username) {
-    return getData(`/api/user/${username}`)
+    return getData(`/user/${username}`)
 }
 
 export async function apiPostUserProfile(data) {
-    return postData(`/api/user`,null,data)
+    return postData(`/user`,null,data)
 }
 
 export function apiGetUserDrawings(userId) {
-    return getData(`/api/user/${userId}/drawings`)
+    return getData(`/user/${userId}/drawings`)
 }
 
 export function apiGetUserComments(userId) {
-    return getData(`/api/user/${userId}/comments`)
+    return getData(`/user/${userId}/comments`)
 }
