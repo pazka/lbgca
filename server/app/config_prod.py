@@ -3,8 +3,9 @@ import os
 # Grabs the folder where the script runs.
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+PORT = 80
 # Enable debug mode.
-DEBUG = False
+DEBUG = True
 
 SERVER_NAME = "api.lesbonnesgrossescouillesdalex.store"
 HOST = "api.lesbonnesgrossescouillesdalex.store"
@@ -14,6 +15,7 @@ CORS_ORIGINS = [
     "api.lesbonnesgrossescouillesdalex.store",
     "www.lesbonnesgrossescouillesdalex.store"
 ]
+COOKIE_DOMAIN = ".lesbonnesgrossescouillesdalex.store"
 CORS_SUPPORTS_CREDENTIALS = True
 
 # Secret key for session management. You can generate random strings here:

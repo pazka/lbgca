@@ -4,8 +4,6 @@ import uuid
 
 from flask import jsonify
 
-from models import is_model
-
 static_path = os.path.dirname(os.path.realpath(__file__)) + '/static/'
 
 

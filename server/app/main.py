@@ -3,13 +3,13 @@ import logging
 
 from flask import Flask, request, Response
 from flask_cors import CORS
+from app import config
 
-import config
-from models import init_db, prepare_db
-from services import init_services, create_account, create_session, remove_session, fetch_session, check_session, \
+from app.models import init_db, prepare_db
+from app.services import init_services, create_account, create_session, remove_session, fetch_session, check_session, \
     fetch_current_user, fetch_user, fetch_session_nb, edit_account, create_order, get_user_orders, get_orders, \
     validate_order, edit_order, create_account_if_not_exist, delete_order
-from utils import ServerKnownError, ClientKnownError
+from app.utils import ServerKnownError, ClientKnownError
 
 logging.getLogger('flask_cors').level = logging.DEBUG
 
@@ -20,7 +20,7 @@ else:
 
 app = Flask(__name__)
 
-app.config.from_object('config')
+app.config.from_object(config)
 cors = CORS(app, resources={
     "*": {
         "origins": app.config["CORS_ORIGINS"]

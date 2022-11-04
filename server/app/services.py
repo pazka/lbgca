@@ -1,8 +1,8 @@
 from flask import session, jsonify
 from flask_session import Session
 
-from models import User, db, Order
-from utils import hash_password, ClientKnownError, success_response, check_static_folder_exist
+from app.models import User, db, Order
+from app.utils import hash_password, ClientKnownError, success_response, check_static_folder_exist
 
 sess = Session()
 nb_sess = 0

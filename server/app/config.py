@@ -14,6 +14,7 @@ CORS_ORIGINS = [
     "localhost",
     "127.0.0.1"
 ]
+COOKIE_DOMAIN = ".localhost"
 HOST = "dev.localhost"
 # Grabs the folder where the script runs.
 print(__file__)
