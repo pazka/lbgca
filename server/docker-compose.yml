@@ -2,7 +2,7 @@ services:
   lbgca:
     build: .
     volumes:
-      - ./static:/app/static
-      - ./database:/app/database
+      - .docker/static:/app/static
+      - ./app/database:/app/database
     ports:
       - "6547:80"
