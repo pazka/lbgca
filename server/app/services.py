@@ -1,7 +1,7 @@
 from flask import session, jsonify, json
 from flask_session import Session
 
-from app.models import User, db, Order
+from app.models import User, db, Order, to_json_obj
 from app.utils import hash_password, ClientKnownError, success_response, check_static_folder_exist
 
 sess = Session()
@@ -64,7 +64,7 @@ def fetch_session_nb():
 
 
 def fetch_session():
-    return json.dumps(session)
+    return to_json_obj(session)
 
 
 def create_session(login, password):

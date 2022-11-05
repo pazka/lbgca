@@ -1,4 +1,5 @@
 import datetime
+import json
 import shutil
 from os import path
 
@@ -88,3 +89,8 @@ def to_json(obj, includes=None):
             res[field] = getattr(obj, field)
 
     return res
+
+
+def to_json_obj(obj):
+    return json.dumps(obj, default=lambda o: o.__dict__,
+                      sort_keys=True, indent=4)
