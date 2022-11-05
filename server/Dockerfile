@@ -8,7 +8,6 @@ RUN pip install gunicorn
 COPY ./app /app
 COPY ./app/config_prod.py /app/config.py
 
-EXPOSE 80
 EXPOSE 443
 
-CMD ["gunicorn", "--conf", "app/gunicorn_conf.py", "--bind", "0.0.0.0:80", "app.main:app"]
+CMD ["gunicorn", "--conf", "app/gunicorn.conf.py", "app.wsgi:app"]

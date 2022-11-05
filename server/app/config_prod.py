@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 PORT = 80
 # Enable debug mode.
-DEBUG = True
+DEBUG = False
 
 SERVER_NAME = "api.lesbonnesgrossescouillesdalex.store"
 HOST = "api.lesbonnesgrossescouillesdalex.store"
