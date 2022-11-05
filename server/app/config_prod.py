@@ -11,9 +11,9 @@ SERVER_NAME = "api.lesbonnesgrossescouillesdalex.store"
 HOST = "api.lesbonnesgrossescouillesdalex.store"
 
 CORS_ORIGINS = [
-    "lesbonnesgrossescouillesdalex.store",
-    "api.lesbonnesgrossescouillesdalex.store",
-    "www.lesbonnesgrossescouillesdalex.store"
+    "https://lesbonnesgrossescouillesdalex.store",
+    "https://api.lesbonnesgrossescouillesdalex.store",
+    "https://www.lesbonnesgrossescouillesdalex.store"
 ]
 COOKIE_DOMAIN = ".lesbonnesgrossescouillesdalex.store"
 CORS_SUPPORTS_CREDENTIALS = True
@@ -27,7 +27,7 @@ INIT_DATABASE_PATH = os.path.join(basedir, 'database/init_database.db')
 DATABASE_PATH = os.path.join(basedir, 'database/database.db')
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_PATH
 
-SESSION_PERMANENT = False
+SESSION_PERMANENT = True
 SESSION_TYPE = 'sqlalchemy'
 PERMANENT_SESSION_LIFETIME = 60 * 60
 

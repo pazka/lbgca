@@ -1,4 +1,4 @@
-from flask import session, jsonify
+from flask import session, jsonify, json
 from flask_session import Session
 
 from app.models import User, db, Order
@@ -64,7 +64,7 @@ def fetch_session_nb():
 
 
 def fetch_session():
-    return session
+    return json.dumps(session)
 
 
 def create_session(login, password):
