@@ -42,7 +42,9 @@
     {
       "name": "Socle de stabilité",
       "description": [
-        ""
+        "Comme les plus grandes oeuvres, l'excellence n'est rien sans présentoir à la hauteur",
+        "C'est pourquoi nous avons pris le temps de concevoir un socle parfaitement adapté à nos autres produits",
+        "Ce support au design épuré laissera s'exprimer votre sculpture avec la même subtilité que le cadre délicat d'un tableau de Van Gogh."
       ],
       "images": [
         "p3/1.jpg",
@@ -54,27 +56,27 @@
   ],
   "globalVariants": [
     {
-      "name": "Cire (Bougie)",
+      "name": "Bougie - Cire",
       "colors": [
         "Blanc"
       ]
     },
     {
-      "name": "Plâtre",
+      "name": "Sculpture - Plâtre",
       "colors": [
         "Blanc",
         "Or"
       ]
     },
     {
-      "name": "Résine (Pot de Fleur)",
+      "name": "Pot de Fleur - Résine",
       "colors": [
         "Or",
         "Transparent"
       ]
     },
     {
-      "name": "Silicone (stressball)",
+      "name": "StressBall - Silicone",
       "colors": [
         "Blanc",
         "Or"

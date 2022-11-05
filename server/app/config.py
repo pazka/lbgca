@@ -10,9 +10,9 @@ SESSION_COOKIE_SECURE = False
 CORS_HEADERS = 'Content-Type'
 
 CORS_ORIGINS = [
-    "dev.localhost",
-    "localhost",
-    "127.0.0.1"
+    "http://dev.localhost",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
 ]
 COOKIE_DOMAIN = ".localhost"
 HOST = "dev.localhost"

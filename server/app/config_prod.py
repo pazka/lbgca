@@ -13,7 +13,8 @@ HOST = "api.lesbonnesgrossescouillesdalex.store"
 CORS_ORIGINS = [
     "https://lesbonnesgrossescouillesdalex.store",
     "https://api.lesbonnesgrossescouillesdalex.store",
-    "https://www.lesbonnesgrossescouillesdalex.store"
+    "https://www.lesbonnesgrossescouillesdalex.store",
+    "http://dev.localhost"
 ]
 COOKIE_DOMAIN = ".lesbonnesgrossescouillesdalex.store"
 CORS_SUPPORTS_CREDENTIALS = True
