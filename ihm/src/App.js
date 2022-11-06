@@ -16,7 +16,7 @@ function App() {
 
     useEffect(() => {
         dispatch(initInventory())
-    })
+    },[])
 
     return (<>
             <Box className={"full-cover"}>

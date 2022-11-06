@@ -13,7 +13,7 @@ function MyBasketPage({}) {
 
     useEffect(() => {
         setComment(userProfile.comment)
-    }, [userProfile])
+    }, [userProfile.comment])
 
     const dispatch = useDispatch()
     return <Box>
