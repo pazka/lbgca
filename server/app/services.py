@@ -82,6 +82,10 @@ def create_session(login, password):
 def remove_session():
     session['connected'] = False
     session['userid'] = None
+    session['username'] = None
+    session['role'] = None
+    session.clear()
+
     return success_response()
 
 
