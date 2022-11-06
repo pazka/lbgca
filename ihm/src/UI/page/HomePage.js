@@ -17,12 +17,12 @@ export default function HomePage({}) {
             </Box>
         </Box>
         <Box className={"descBlock"}>
-            <Box id="descImg2" className={"imgDesc"}></Box>
             <Box>
                 <p>
                     Notre intention : vous proposer un Memento à la hauteur de vos richesses perdues
                 </p>
             </Box>
+            <Box id="descImg2" className={"imgDesc"}></Box>
         </Box>
         <Box className={"descBlock"}>
             <Box>
@@ -34,14 +34,12 @@ export default function HomePage({}) {
             </Box>
         </Box>
         <Box className={"descBlock"}>
-            <Box id="descImg4" className={"imgDesc"}>
-
-            </Box>
             <Box>
                 <p>
                     Ce n'est donc pas une seule sculpture mais bien toute une gamme variée que LBGCA™ vous invite à découvrir dans notre section <Link to="/products">Les Oeufs du Magasin</Link>
                 </p>
             </Box>
+            <Box id="descImg4" className={"imgDesc"}></Box>
         </Box>
     </Box>
 } 

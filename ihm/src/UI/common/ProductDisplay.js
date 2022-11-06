@@ -107,16 +107,8 @@ function ProductDisplay(
                 alt={product.name + " photo"}
             />
             <CardContent>
-                <Box sx={{
-                    position: "absolute"
-                }}>
-                    <Box sx={{
-                        position: "absolute",
-                        top: "-8em",
-                        "&>*": {
-                            boxShadow: "rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;"
-                        }
-                    }}>
+                <Box className={"product-display-actions-container"}>
+                    <Box className={"product-display-actions"}>
                         <IconButton size={"small"} color={"primary"} onClick={handleChangeVariant(-1)}>
                             <ArrowCircleLeft/>
                         </IconButton>

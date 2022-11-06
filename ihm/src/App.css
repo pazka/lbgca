@@ -46,8 +46,8 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .logo {
-    width: 200px;
-    height: 200px;
+    width: 8em;
+    height: 8em;
     background-image: url("img/oeuf_petit_left.png");
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Do not repeat the image */
@@ -81,8 +81,8 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .text-logo {
-    width: min(100%, 800px);
-    height: max(10vh, 50px);
+    width: min(80%, 800px);
+    height: max(5vh, 50px);
     background-image: url("img/text.png");
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Do not repeat the image */
@@ -94,6 +94,11 @@ body::-webkit-scrollbar-thumb:hover {
     background-repeat: repeat;
     width: min(1000px, 100%);
     margin: auto;
+}
+
+.header button {
+    margin-right: 1em;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 }
 
 .full-cover {
@@ -116,7 +121,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 .parent-parent-cover {
     background-color: white;
-    width: min(1000px, 100%);
+    width: min(1000px, 80%);
     margin: auto;
     border-width: 3em;
     border-style: solid;
@@ -148,6 +153,10 @@ body::-webkit-scrollbar-thumb:hover {
     padding: 2em;
 }
 
+.descBlock:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
 .descBlock p {
     flex: 0 1 auto;
     font-size: 1.8em;
@@ -156,13 +165,14 @@ body::-webkit-scrollbar-thumb:hover {
 
 .imgDesc {
     flex: 1 0 auto;
-    width: 66%;
+    width: 66vh;
     height: auto;
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: cover; /* Resize the background image to cover the entire container */
     transition: all 0.5s;
 }
+
 
 #descImg1 {
     background-image: url("img/landing/texture_zoom.jpg");
@@ -178,4 +188,70 @@ body::-webkit-scrollbar-thumb:hover {
 
 #descImg4 {
     background-image: url("img/landing/all.jpg");
+}
+
+.product-display-actions-container{
+    position: absolute;
+}
+
+.product-display-actions {
+    position: absolute;
+    top: -8em;
+}
+
+.product-display-actions > * {
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+}
+
+@media (max-aspect-ratio: 2/1) {
+    body {
+        font-size: x-small;
+    }
+
+    .main-frame {
+        width: min(1000px, 80%);
+        margin: auto;
+        __box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+        background-color: white;
+
+        border-width: 3em;
+        border-style: solid;
+        background-clip: padding-box;
+        border-image: url("img/grass-transparent.png") 30% round;
+    }
+
+    .header > * {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .header button[class*='MuiButtonBase-'] {
+        font-size: 1em;
+    }
+
+    .descBlock {
+        flex-direction: column;
+    }
+
+    .descBlock:nth-child(even) {
+        flex-direction: column;
+    }
+
+    .imgDesc {
+        flex: 1 0 auto;
+        height: 33vh;
+        width: auto;
+        background-position: center; /* Center the image */
+        background-repeat: no-repeat; /* Do not repeat the image */
+        background-size: cover; /* Resize the background image to cover the entire container */
+        transition: all 0.5s;
+    }
+
+    .product-display-actions-container{
+        position: initial;
+    }
+    .product-display-actions {
+        position: initial;
+    }
+
 }
