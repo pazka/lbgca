@@ -153,7 +153,7 @@ body::-webkit-scrollbar-thumb:hover {
     padding: 2em;
 }
 
-.descBlock:nth-child(even) {
+.descBlock:nth-child(odd) {
     flex-direction: row-reverse;
 }
 
@@ -233,7 +233,7 @@ body::-webkit-scrollbar-thumb:hover {
         flex-direction: column;
     }
 
-    .descBlock:nth-child(even) {
+    .descBlock:nth-child(odd) {
         flex-direction: column;
     }
 

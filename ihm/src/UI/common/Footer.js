@@ -21,7 +21,10 @@ export default function Footer() {
                     <br/>
                     Le login ne sert qu'à lier la panier à un nom pour pas qu'on se perde. Si vous êtes content.e de la prestation, validez votre panier et laissez un commentaire !
                     <br/>
-                    <code>xoxo Al² Studio</code>
+                    <br/>
+                    <code style={{
+                        marginLeft : "70%"
+                    }}>xoxo Al² Studio</code>
                 </p>
             </Paper>
         </footer>
