@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 
 export default function HomePage({}) {
     return <Box>
-        <video width={"100%"} autoPlay={true} controls>
+        <video id={"videoCover"} width={"100%"} autoPlay={true} controls>
             <source src="video/night.mp4" type="video/mp4"/>
         </video>
         <Box className={"descBlock"}>

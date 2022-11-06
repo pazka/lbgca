@@ -76,7 +76,7 @@ def create_session(login, password):
     session['userid'] = user.id
     session['username'] = user.username
     session['role'] = user.role
-    return session
+    return to_json_obj(session)
 
 
 def remove_session():
