@@ -1,5 +1,6 @@
 services:
   lbgca:
+    restart: unless-stopped
     build: .
     volumes:
       - .docker/static:/app/static
