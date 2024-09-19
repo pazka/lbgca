@@ -7,18 +7,15 @@ PORT = 80
 # Enable debug mode.
 DEBUG = False
 
-SERVER_NAME = "api.lesbonnesgrossescouillesdalex.store"
-HOST = "api.lesbonnesgrossescouillesdalex.store"
+SERVER_NAME = "api-lbgca.hosh.it"
+HOST = "api-lbgca.hosh.it"
 
 CORS_ORIGINS = [
-    "https://lesbonnesgrossescouillesdalex.store",
-    "https://api.lesbonnesgrossescouillesdalex.store",
-    "https://www.lesbonnesgrossescouillesdalex.store",
     "https://lbgca.hosh.it",
     "https://api-lbgca.hosh.it",
     "http://dev.localhost"
 ]
-COOKIE_DOMAIN = ".lesbonnesgrossescouillesdalex.store"
+COOKIE_DOMAIN = ".hosh.it"
 CORS_SUPPORTS_CREDENTIALS = True
 
 # Secret key for session management. You can generate random strings here:
