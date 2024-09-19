@@ -14,6 +14,8 @@ CORS_ORIGINS = [
     "https://lesbonnesgrossescouillesdalex.store",
     "https://api.lesbonnesgrossescouillesdalex.store",
     "https://www.lesbonnesgrossescouillesdalex.store",
+    "https://lbgca.hosh.it",
+    "https://api-lbgca.hosh.it",
     "http://dev.localhost"
 ]
 COOKIE_DOMAIN = ".lesbonnesgrossescouillesdalex.store"
