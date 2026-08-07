@@ -1,3 +1,4 @@
+import sqlalchemy
 from flask import session, jsonify, json
 from flask_session import Session
 
@@ -58,8 +59,9 @@ def edit_account(user_edited):
 
 
 def fetch_session_nb():
-    result = db.engine.execute("select COUNT(*) FROM sessions")
-    names = [row[0] for row in result]
+    with db.engine.connect() as conn:
+        result = conn.execute(sqlalchemy.text("select COUNT(*) FROM sessions"))
+        names = [row[0] for row in result]
     return names
 
 
