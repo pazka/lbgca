@@ -47,7 +47,7 @@ database file on the volume, no tracebacks.
 
 - **Python 3.12 → 3.14** (Dependabot #4): **no-go.** On 3.14, `POST /session` and `GET /session` return
   `{"accessed", "modified", "on_update", "sid"}` instead of `{"_permanent", "connected", "role", "userid",
-  "username"}`: `services.to_json_obj` calls `json.dumps(session, default=lambda o: o.__dict__)` and 3.14's
+  "username"}`: `models.to_json_obj` (used by `services`) calls `json.dumps(session, default=lambda o: o.__dict__)` and 3.14's
   encoder now hands the Flask-Session object to `default`. The front (`ihm/src/StateManagement/
   userEffects.js`) reads `res.connected` and `username`, so **login breaks**, and the session id leaks into
   the body. Caught by `test_login_creates_the_account_on_first_use` and the smoke. Fix (owner
