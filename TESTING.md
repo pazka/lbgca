@@ -28,44 +28,42 @@ sed 's/python:3.12-slim/python:3.14-slim/' server/Dockerfile | docker build -f -
 
 ## CI (`.github/workflows/ci.yml`)
 
-PRs, `main`, `agent/**`. `server tests (python 3.12)` (gate) and `(python 3.14)` (early warning,
-non-blocking); `container smoke` (builds `server/`, runs `scripts/smoke.sh` with a read-only rootfs and
-the compose volumes); `ihm build` (non-blocking, see below).
+PRs, `main`, `agent/**`, all blocking: `server tests (python 3.12|3.14)`; `container smoke` (builds
+`server/`, runs `scripts/smoke.sh` with a read-only rootfs and the compose volumes); `ihm build` (compile
+check: the images are not in git, `scripts/ihm-stub-assets.sh` puts placeholders at the imported paths).
 
 ## What is covered
 
-`server/tests/test_api.py` (13 tests, stdlib, production config, temp DB): boot text with the session
+`server/tests/test_api.py` (17 tests, stdlib, production config, temp DB): boot text with the session
 count, JSON 404, DB schema, signup, login-creates-account and **the exact `/session` body the front reads**
-(`connected`, `username`, …), wrong password, logout, profile read/edit, order create / validate / delete,
-public order list, cannot delete another user's order, and the known-broken endpoints.
+(`connected`, `username`, …) with the cookie flags, login without password (and legacy accounts that had
+one), no password stored, logout, profile read/edit, order create / edit / validate / delete, order routes
+need a session, cannot edit or delete another user's order, cannot edit a validated order, orders of a user,
+public order list.
 
 `scripts/smoke.sh`: the built image, read-only rootfs + `cap_drop ALL` + `no-new-privileges`, database and
-static volumes as in `docker-compose.yml`: boot, 404, login body, profile, order, public list, logout,
-database file on the volume, no tracebacks.
+static volumes as in `docker-compose.yml`: boot, 404, login body, profile, order, order edit, public list,
+logout, database file on the volume, no tracebacks.
 
-## Upgrades checked (2026-10-19)
+## Changes and upgrades (2026-10-19)
 
-- **Python 3.12 → 3.14** (Dependabot #4): **no-go.** On 3.14, `POST /session` and `GET /session` return
-  `{"accessed", "modified", "on_update", "sid"}` instead of `{"_permanent", "connected", "role", "userid",
-  "username"}`: `models.to_json_obj` (used by `services`) calls `json.dumps(session, default=lambda o: o.__dict__)` and 3.14's
-  encoder now hands the Flask-Session object to `default`. The front (`ihm/src/StateManagement/
-  userEffects.js`) reads `res.connected` and `username`, so **login breaks**, and the session id leaks into
-  the body. Caught by `test_login_creates_the_account_on_first_use` and the smoke. Fix (owner
-  decision, separate PR): serialise `dict(session)` instead of `session` in `models.to_json_obj` —
-  verified: 13/13 tests on 3.14 with that one-line change.
+- **No passwords** (owner decision): the login name opens or creates the account; a sent password is ignored;
+  new accounts store `""`. Accounts created earlier with a password still log in by name.
+- **Python 3.14 fix**: on 3.14 `json.dumps(session, default=…)` serialised the Flask-Session object itself
+  (`accessed`, `modified`, `sid`…) instead of its items, which broke the front's login.
+  `services` now serialises `dict(session)`. 17/17 tests and the smoke pass on 3.12 and 3.14 → Dependabot #4
+  (Python 3.14) is a **go**.
+- Fixed: `POST /order/<id>` (always 500 before; now edits your own, non-validated order),
+  `GET /user/<id>/orders` (always 500), `delete_order` commits, order routes answer 400 "User is not
+  connected" without a session instead of a 500.
+- `SECRET_KEY` comes from the environment (random per boot otherwise). It is not used for sessions
+  (Flask-Session ids are not signed), but the value that was committed must be considered public.
+  Session cookie is now `Secure; SameSite=Lax` in production (the site is HTTPS only).
+- `gunicorn` pinned in `server/app/requirements.txt`; duplicate `server/requirements.txt` removed;
+  `ihm/package-lock.json` re-synced (adds the missing `typescript` entry only).
 
-## Known issues (pinned, not changed)
+## Known issues (kept)
 
-- **`SECRET_KEY` for production is committed** in `server/app/config_prod.py` (public repo): session
-  cookies can be forged. Move it to an env var and rotate.
-- **Passwords are stored in clear** (`utils.hash_password` returns its input).
-- `GET /orders` needs no session and returns every order with its user's profile.
-- `POST /order/<id>` always 500s (`edit_order` uses a Query, not `.first()`); `GET /user/<id>/orders`
-  always 500s (`user.orders` does not exist; the relation is `basket`).
-- `delete_order` does not commit explicitly (works today because the session is committed later).
-- Session cookie is not `Secure` in production; image runs as root; `gunicorn` and SQLAlchemy are not pinned.
-- `ihm/package-lock.json` is out of sync with `package.json` (`typescript@4.9.5` missing): `npm ci` fails.
-  Fix: `npm install` in `ihm/` on a trusted machine/container, review, commit the lock. Then make the
-  `ihm build` CI job blocking.
-- `server/requirements.txt` duplicates `server/app/requirements.txt` (the Dockerfile uses the latter).
+- `GET /orders` needs no session and returns every order with its user's profile (by design, joke site).
+- Image runs as root; SQLAlchemy is a transitive, unpinned dependency.
 - `server/identifier.sqlite` is committed (not read by this work).
