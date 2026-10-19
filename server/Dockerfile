@@ -5,7 +5,6 @@ RUN apt-get update && apt-get upgrade -y --no-install-recommends && rm -rf /var/
 COPY ./app/requirements.txt /app/requirements.txt
 
 RUN pip install --no-cache-dir -r /app/requirements.txt
-RUN pip install gunicorn
 
 COPY ./app /app
 COPY ./app/config_prod.py /app/config.py
