@@ -1,0 +1,58 @@
+name: ci
+# Upgrade safety net (see TESTING.md). Every PR (incl. Dependabot), main, and agent/** branches
+# (an agent gets CI without opening a PR). Nothing is pushed.
+on:
+  pull_request:
+  push:
+    branches: [main, 'agent/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  server:
+    name: server tests (python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    container: python:${{ matrix.python }}-slim
+    # 3.12 = the image today (gate). 3.14 = next: early warning only. It is red today on purpose:
+    # Python 3.14 changes the /session response body the front reads (TESTING.md).
+    continue-on-error: ${{ matrix.next }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { python: '3.12', next: false }
+          - { python: '3.14', next: true }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: pip install --no-cache-dir -r server/app/requirements.txt
+      - run: python -m unittest discover -s tests -v
+        working-directory: server
+
+  smoke:
+    name: container smoke
+    needs: server
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: server
+          load: true
+          push: false
+          tags: lbgca:smoke
+      - run: bash scripts/smoke.sh lbgca:smoke
+
+  ihm:
+    name: ihm build
+    runs-on: ubuntu-latest
+    container: node:20-alpine
+    # Non-blocking until ihm/package-lock.json is back in sync with package.json (TESTING.md).
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - working-directory: ihm
+        run: npm ci --no-audit --no-fund && CI=false npm run build && test -s build/index.html
