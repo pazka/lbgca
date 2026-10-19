@@ -16,15 +16,11 @@ jobs:
     name: server tests (python ${{ matrix.python }})
     runs-on: ubuntu-latest
     container: python:${{ matrix.python }}-slim
-    # 3.12 = the image today (gate). 3.14 = next: early warning only. It is red today on purpose:
-    # Python 3.14 changes the /session response body the front reads (TESTING.md).
-    continue-on-error: ${{ matrix.next }}
+    # 3.12 = the image today, 3.14 = next. Both are gates since the /session fix (TESTING.md).
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - { python: '3.12', next: false }
-          - { python: '3.14', next: true }
+        python: ['3.12', '3.14']
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: pip install --no-cache-dir -r server/app/requirements.txt
@@ -50,9 +46,14 @@ jobs:
     name: ihm build
     runs-on: ubuntu-latest
     container: node:20-alpine
-    # Non-blocking until ihm/package-lock.json is back in sync with package.json (TESTING.md).
-    continue-on-error: true
+    # Compile check: images are not in git, placeholders stand in for them (scripts/ihm-stub-assets.sh).
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - working-directory: ihm
-        run: npm ci --no-audit --no-fund && CI=false npm run build && test -s build/index.html
+        run: |
+          set -eu
+          npm ci --ignore-scripts --no-audit --no-fund
+          sh ../scripts/ihm-stub-assets.sh
+          CI=false npm run build
+          grep -q '<div id="root">' build/index.html
+          ls build/static/js/main.*.js

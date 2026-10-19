@@ -59,11 +59,15 @@ grep -q '"username": "smoke"' "$TMP/body" || fail "login body lacks username: $(
 COOKIE="$(grep -i '^set-cookie: session=' "$TMP/h" | sed -E 's/^[Ss]et-[Cc]ookie: ([^;]+);.*/\1/')"
 [ -n "$COOKIE" ] || fail "no session cookie"
 
-step "profile, order, public list, logout"
+step "profile, order, edit, public list, logout"
 code 200 -H "cookie: $COOKIE" "$BASE/user"
 grep -q '"username":"smoke"' "$TMP/body" || fail "profile"
 code 200 -H "cookie: $COOKIE" -H 'content-type: application/json' \
   -d '{"product":"pasta","amount":2,"variant":"red"}' "$BASE/order"
+ORDER="$(grep -oE '"id":[0-9]+,"product"' "$TMP/body" | grep -oE '[0-9]+')"
+code 200 -H "cookie: $COOKIE" -H 'content-type: application/json' \
+  -d '{"amount":3,"variant":"blue"}' "$BASE/order/$ORDER"
+grep -q '"amount":3' "$TMP/body" && grep -q '"variant":"blue"' "$TMP/body" || fail "order edit: $(cat "$TMP/body")"
 code 200 "$BASE/orders"
 grep -q '"product":"pasta"' "$TMP/body" || fail "orders list"
 code 200 -H "cookie: $COOKIE" -X DELETE "$BASE/session"
