@@ -7,10 +7,6 @@ from flask import jsonify
 static_path = os.path.dirname(os.path.realpath(__file__)) + '/static/'
 
 
-def hash_password(password):
-    return password  # lol
-
-
 def check_static_folder_exist():
     if not os.path.isdir(static_path):
         os.mkdir(static_path)

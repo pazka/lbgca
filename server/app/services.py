@@ -3,7 +3,7 @@ from flask import session, jsonify, json
 from flask_session import Session
 
 from app.models import User, db, Order, to_json_obj
-from app.utils import hash_password, ClientKnownError, success_response, check_static_folder_exist
+from app.utils import ClientKnownError, success_response, check_static_folder_exist
 
 sess = Session()
 nb_sess = 0
@@ -25,21 +25,22 @@ def check_role(role):
         raise ClientKnownError('User is not ' + role)
 
 
-def create_account_if_not_exist(login, password):
+# Accounts have no password (owner decision): the column is kept (NOT NULL) and set to "".
+def create_account_if_not_exist(login):
     if User.query.filter_by(username=login).first() is not None:
         return False
 
-    me = User(username=login, password=hash_password(password))
+    me = User(username=login, password="")
     db.session.add(me)
     db.session.commit()
     return True
 
 
-def create_account(login, password):
+def create_account(login):
     if User.query.filter_by(username=login).first() is not None:
         raise ClientKnownError("User already exist")
 
-    me = User(username=login, password=hash_password(password))
+    me = User(username=login, password="")
     db.session.add(me)
     db.session.commit()
     return success_response()
@@ -66,11 +67,11 @@ def fetch_session_nb():
 
 
 def fetch_session():
-    return to_json_obj(session)
+    return to_json_obj(dict(session))
 
 
-def create_session(login, password):
-    user = User.query.filter_by(username=login, password=hash_password(password)).first()
+def create_session(login):
+    user = User.query.filter_by(username=login).first()
     if user is None:
         raise ClientKnownError("User not found")
 
@@ -78,7 +79,8 @@ def create_session(login, password):
     session['userid'] = user.id
     session['username'] = user.username
     session['role'] = user.role
-    return to_json_obj(session)
+    # dict(): on Python 3.14 json passes the Flask-Session object to the default= hook instead of its items.
+    return to_json_obj(dict(session))
 
 
 def remove_session():
@@ -134,10 +136,12 @@ def validate_order(value):
 
 
 def edit_order(order_id, amount, variant):
-    order = Order.query.filter_by(id=order_id)
+    order = Order.query.filter_by(id=order_id).first()
     if order is None:
         raise ClientKnownError("No order found")
-    if order.validated is False:
+    if order.user_id != session['userid']:
+        raise ClientKnownError("Not your order")
+    if order.validated:
         raise ClientKnownError("Order is validated")
 
     order.amount = amount
@@ -158,6 +162,7 @@ def delete_order(order_id):
         raise ClientKnownError("Not your order")
 
     db.session.delete(order)
+    db.session.commit()
     return success_response()
 
 
@@ -167,7 +172,7 @@ def get_user_orders(user_id):
     if user is None:
         raise ClientKnownError("No user found")
 
-    all_orders = list(map(lambda x: x.as_dict(), user.orders))
+    all_orders = list(map(lambda x: x.as_dict(), user.basket))
     return jsonify(all_orders)
 
 

@@ -58,14 +58,15 @@ def test():
 
 @app.route("/signup", methods=['POST'])
 def signup():
-    return create_account(request.json['login'], request.json['password'])
+    return create_account(request.json['login'])
 
 
 @app.route("/session", methods=['GET', 'POST', 'DELETE'])
 def session():
     if request.method == 'POST':
-        create_account_if_not_exist(request.json['login'], request.json['password'])
-        return create_session(request.json['login'], request.json['password'])
+        # No passwords (owner decision): the login name alone opens, or creates, the account.
+        create_account_if_not_exist(request.json['login'])
+        return create_session(request.json['login'])
     elif request.method == 'DELETE':
         return remove_session()
     elif request.method == 'GET':
@@ -96,6 +97,7 @@ def edit_user():
 
 @app.route("/order", methods=["POST"])
 def post_create_order():
+    check_session()
     return create_order(request.json['product'], request.json['amount'], request.json['variant'])
 
 
@@ -107,11 +109,13 @@ def api_delete_order(order_id):
 
 @app.route("/order/<int:order_id>", methods=["POST"])
 def post_edit_order(order_id):
+    check_session()
     return edit_order(order_id, request.json['amount'], request.json['variant'])
 
 
 @app.route("/order/validate", methods=["POST"])
 def confirm_order():
+    check_session()
     return validate_order(request.json['value'])
 
 

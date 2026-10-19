@@ -90,9 +90,9 @@ class ApiTest(unittest.TestCase):
     # ---------------------------------------------------------------- accounts and sessions
 
     def test_signup(self):
-        r = self.post("/signup", {"login": "alice", "password": "pw"})
+        r = self.post("/signup", {"login": "alice"})
         self.assertEqual((r.status_code, body(r)), (200, {"success": True}))
-        r = self.post("/signup", {"login": "alice", "password": "pw"})
+        r = self.post("/signup", {"login": "alice"})
         self.assertEqual((r.status_code, body(r)), (400, error(400, "ClientKnownError", "User already exist")))
 
     def test_login_creates_the_account_on_first_use(self):
@@ -105,13 +105,28 @@ class ApiTest(unittest.TestCase):
         cookie = r.headers["Set-Cookie"]
         self.assertTrue(cookie.startswith("session="))
         self.assertIn("HttpOnly", cookie)
+        self.assertIn("Secure", cookie)
+        self.assertIn("SameSite=Lax", cookie)
         self.assertEqual(body(self.get("/session")), body(r))
 
-    def test_wrong_password(self):
-        self.login()
+    def test_login_needs_no_password(self):
+        # Owner decision (2026-10-19): no passwords; the login name opens the account. Any password is ignored.
+        self.login(password="whatever")
         self.c.delete(BASE + "/session")
-        r = self.login(password="nope")
-        self.assertEqual((r.status_code, body(r)), (400, error(400, "ClientKnownError", "User not found")))
+        r = self.post("/session", {"login": "alice"})
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual((body(r)["username"], body(r)["userid"]), ("alice", 1))
+        self.assertEqual(body(self.get("/user"))["username"], "alice")
+
+    def test_account_made_with_a_password_before_the_change_still_logs_in(self):
+        con = sqlite3.connect(cfg.DATABASE_PATH)
+        try:
+            con.execute("INSERT INTO user (username, password, role) VALUES ('legacy', 'old-secret', 'user')")
+            con.commit()
+        finally:
+            con.close()
+        r = self.post("/session", {"login": "legacy", "password": "nopassword"})
+        self.assertEqual((r.status_code, body(r)["username"]), (200, "legacy"))
 
     def test_logout(self):
         self.login()
@@ -121,12 +136,13 @@ class ApiTest(unittest.TestCase):
         r = self.get("/user")
         self.assertEqual((r.status_code, body(r)), (400, error(400, "ClientKnownError", "User is not connected")))
 
-    def test_passwords_are_stored_in_clear(self):
-        # Known issue kept as is (TESTING.md): utils.hash_password returns its input.
-        self.login()
+    def test_no_password_is_stored(self):
+        self.login(password="typed-anyway")
+        self.post("/signup", {"login": "bob", "password": "typed-anyway"})
         con = sqlite3.connect(cfg.DATABASE_PATH)
         try:
-            self.assertEqual(con.execute("SELECT username, password FROM user").fetchall(), [("alice", "pw")])
+            self.assertEqual(con.execute("SELECT username, password FROM user ORDER BY id").fetchall(),
+                             [("alice", ""), ("bob", "")])
         finally:
             con.close()
 
@@ -173,6 +189,12 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertEqual(body(r)[0]["user"]["username"], "alice")
 
+    def test_order_routes_need_a_session(self):
+        for path, payload in [("/order", {"product": "p", "amount": 1, "variant": "v"}),
+                              ("/order/1", {"amount": 1, "variant": "v"}), ("/order/validate", {"value": 1})]:
+            r = self.post(path, payload)
+            self.assertEqual((r.status_code, body(r)), (400, error(400, "ClientKnownError", "User is not connected")))
+
     def test_cannot_delete_someone_elses_order(self):
         self.login()
         self.order()
@@ -181,16 +203,40 @@ class ApiTest(unittest.TestCase):
         r = self.c.delete(BASE + "/order/1")
         self.assertEqual((r.status_code, body(r)), (400, error(400, "ClientKnownError", "Not your order")))
 
-    def test_known_broken_endpoints(self):
-        # Pinned bugs (TESTING.md): edit_order never calls .first(); get_user_orders reads user.orders.
+    def test_edit_order(self):
         self.login()
         self.order()
         r = self.post("/order/1", {"amount": 3, "variant": "blue"})
-        self.assertEqual((r.status_code, body(r)),
-                         (500, error(500, "ServerKnownError", "'Query' object has no attribute 'validated'")))
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual((body(r)["amount"], body(r)["variant"]), (3, "blue"))
+        saved = body(self.get("/orders"))[0]
+        self.assertEqual((saved["amount"], saved["variant"], saved["product"]), (3, "blue", "pasta"))
+        r = self.post("/order/9", {"amount": 1, "variant": "x"})
+        self.assertEqual((r.status_code, body(r)), (400, error(400, "ClientKnownError", "No order found")))
+
+    def test_cannot_edit_someone_elses_or_a_validated_order(self):
+        self.login()
+        self.order()
+        self.c.delete(BASE + "/session")
+        self.login("bob")
+        r = self.post("/order/1", {"amount": 9, "variant": "x"})
+        self.assertEqual((r.status_code, body(r)), (400, error(400, "ClientKnownError", "Not your order")))
+        self.c.delete(BASE + "/session")
+        self.login("alice")
+        self.post("/order/validate", {"value": 1})
+        r = self.post("/order/1", {"amount": 9, "variant": "x"})
+        self.assertEqual((r.status_code, body(r)), (400, error(400, "ClientKnownError", "Order is validated")))
+        self.assertEqual(body(self.get("/orders"))[0]["amount"], 2)
+
+    def test_orders_of_a_user(self):
+        self.login()
+        self.order()
+        self.post("/order", {"product": "bread", "amount": 1, "variant": "white"})
         r = self.get("/user/1/orders")
-        self.assertEqual((r.status_code, body(r)),
-                         (500, error(500, "ServerKnownError", "'User' object has no attribute 'orders'")))
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual([(o["product"], o["user"]["username"]) for o in body(r)], [("pasta", "alice"), ("bread", "alice")])
+        r = self.get("/user/9/orders")
+        self.assertEqual((r.status_code, body(r)), (400, error(400, "ClientKnownError", "No user found")))
 
 
 if __name__ == "__main__":
