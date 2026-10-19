@@ -1,4 +1,5 @@
 import os
+import secrets
 
 # Grabs the folder where the script runs.
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -20,7 +21,11 @@ CORS_SUPPORTS_CREDENTIALS = True
 
 # Secret key for session management. You can generate random strings here:
 # https://randomkeygen.com/
-SECRET_KEY = 'F9hnubP4mexPogIFBVEsFHIVpUpC6JxO'
+# From the environment. Not used for sessions today (Flask-Session ids are not signed: SESSION_USE_SIGNER is
+# off), so a random per-boot fallback is safe. The value formerly committed here must be considered public.
+SECRET_KEY = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = "Lax"
 
 # Connect to the database
 INIT_DATABASE_PATH = os.path.join(basedir, 'database/init_database.db')

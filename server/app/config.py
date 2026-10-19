@@ -26,7 +26,7 @@ DEBUG = True
 
 # Secret key for session management. You can generate random strings here:
 # https://randomkeygen.com/
-SECRET_KEY = 'F9hnubP4mexPogIFBVEsFHIVpUpC6JxO'
+SECRET_KEY = 'dev-only-not-a-secret'
 
 # Connect to the database
 INIT_DATABASE_PATH = os.path.join(basedir, 'database/init_database.db')
