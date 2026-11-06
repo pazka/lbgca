@@ -10,6 +10,7 @@ import importlib
 import json
 import os
 import sqlite3
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -237,6 +238,73 @@ class ApiTest(unittest.TestCase):
         self.assertEqual([(o["product"], o["user"]["username"]) for o in body(r)], [("pasta", "alice"), ("bread", "alice")])
         r = self.get("/user/9/orders")
         self.assertEqual((r.status_code, body(r)), (400, error(400, "ClientKnownError", "No user found")))
+
+    # ---------------------------------------------------------------- /healthz (box contract, hosh-deploy)
+
+    def test_healthz_proves_database_and_data_dir(self):
+        self.login()
+        self.order()
+        for base in (BASE, "http://127.0.0.1:8000"):  # the box checks it on the loopback port too
+            r = self.c.get(base + "/healthz")
+            self.assertEqual((r.status_code, r.content_type), (200, "application/json"))
+            self.assertEqual(body(r), {"status": "ok", "database": "ok", "data_dir": "writable",
+                                       "static_dir": "writable", "users": 1, "orders": 1, "sessions": 1})
+        self.assertEqual(self.c.head(BASE + "/healthz").status_code, 200)
+        self.assertEqual([f for f in os.listdir(TMP) if f.startswith(".healthz")], [])
+
+    def test_healthz_fails_without_database(self):
+        with app.app_context():
+            db.drop_all()
+        r = self.get("/healthz")
+        self.assertEqual(r.status_code, 503)
+        self.assertEqual((body(r)["status"], body(r)["database"]), ("fail", "OperationalError"))
+
+
+def run_app(env, code):
+    """Import the production app in a fresh interpreter with `env` (paths are read at import)."""
+    script = ("import sys; sys.path.insert(0, %r); import app.config_prod as c; sys.modules['app.config'] = c; "
+              "import app; app.config = c; from app.main import app as a; " % SERVER_DIR) + code
+    out = subprocess.run([sys.executable, "-c", script], env={**os.environ, **env}, capture_output=True, text=True)
+    if out.returncode:
+        raise AssertionError(out.stderr[-2000:])
+    return out.stdout.strip().splitlines()[-1]
+
+
+class EnvLayoutTest(unittest.TestCase):
+    """Legacy box: /app/database + /app/static (defaults). hosh-deploy: DATA_DIR=/data, STATIC_DIR=/data/static."""
+
+    def test_default_paths_are_the_legacy_bind_mounts(self):
+        # config + utils only: importing the whole app with these defaults would write into the source tree
+        env = {k: v for k, v in os.environ.items() if k not in ("DATA_DIR", "STATIC_DIR")}
+        out = subprocess.run([sys.executable, "-c", "import sys; sys.path.insert(0, %r); import app.config_prod as c, "
+                              "app.utils as u; print(c.DATABASE_PATH, c.INIT_DATABASE_PATH, u.static_path)" % SERVER_DIR],
+                             env=env, capture_output=True, text=True, check=True).stdout.split()
+        app_dir = os.path.join(SERVER_DIR, "app")
+        self.assertEqual(out, [os.path.join(app_dir, "database", "database.db"),
+                               os.path.join(app_dir, "database", "init_database.db"), os.path.join(app_dir, "static", "")])
+
+    def test_fresh_data_dir_without_init_database(self):
+        data = tempfile.mkdtemp(prefix="lbgca-data-")
+        static = os.path.join(data, "static")
+        got = run_app({"DATA_DIR": data, "STATIC_DIR": static},
+                      "c2 = a.test_client(); c2.post('https://api-lbgca.hosh.it/session', json={'login': 'bob'}); "
+                      "import json; print(json.dumps(c2.get('http://127.0.0.1:8000/healthz').get_json(), sort_keys=True))")
+        self.assertEqual(json.loads(got)["status"], "ok")
+        self.assertEqual(json.loads(got)["users"], 1)
+        self.assertTrue(os.path.isfile(os.path.join(data, "database.db")))
+        self.assertTrue(os.path.isdir(static))
+        self.assertFalse(os.path.exists(os.path.join(data, "init_database.db")))
+
+    def test_existing_database_is_never_replaced_by_init_database(self):
+        data = tempfile.mkdtemp(prefix="lbgca-data-")
+        run_app({"DATA_DIR": data, "STATIC_DIR": os.path.join(data, "static")},
+                "c2 = a.test_client(); c2.post('https://api-lbgca.hosh.it/session', json={'login': 'carol'}); "
+                "c2.post('https://api-lbgca.hosh.it/order', json={'product': 'p', 'amount': 1, 'variant': 'v'}); print('ok')")
+        # an init database that would wipe the data if it were copied over an existing database
+        sqlite3.connect(os.path.join(data, "init_database.db")).close()
+        got = run_app({"DATA_DIR": data, "STATIC_DIR": os.path.join(data, "static")},
+                      "import json; print(json.dumps(a.test_client().get('https://api-lbgca.hosh.it/orders').get_json()))")
+        self.assertEqual([(o["product"], o["user"]["username"]) for o in json.loads(got)], [("p", "carol")])
 
 
 if __name__ == "__main__":

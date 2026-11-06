@@ -4,12 +4,13 @@ import uuid
 
 from flask import jsonify
 
-static_path = os.path.dirname(os.path.realpath(__file__)) + '/static/'
+# STATIC_DIR defaults to the legacy bind mount (/app/static); the hosh-deploy compose sets /data/static.
+static_path = os.path.join(os.environ.get("STATIC_DIR") or os.path.dirname(os.path.realpath(__file__)) + '/static', '')
 
 
 def check_static_folder_exist():
     if not os.path.isdir(static_path):
-        os.mkdir(static_path)
+        os.makedirs(static_path, exist_ok=True)
 
 
 def get_new_file_name():

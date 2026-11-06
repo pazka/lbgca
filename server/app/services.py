@@ -180,3 +180,36 @@ def get_orders():
     orders = Order.query.all()
     all_orders = list(map(lambda x: x.as_dict(), orders))
     return jsonify(all_orders)
+
+
+def health():
+    """Capability check for GET /healthz: database readable, data + static dirs writable. Counts only."""
+    import os
+    import uuid
+    from flask import current_app
+    from app.utils import static_path
+    res = {"status": "ok"}
+    try:
+        with db.engine.connect() as conn:
+            for key, table in (("users", "user"), ("orders", "order"), ("sessions", "sessions")):
+                res[key] = conn.execute(sqlalchemy.text('SELECT COUNT(*) FROM "%s"' % table)).scalar()
+        res["database"] = "ok"
+    except Exception as e:  # noqa: BLE001 — reported, not raised
+        res["database"] = type(e).__name__
+        res["status"] = "fail"
+    data_dir = os.path.dirname(current_app.config["DATABASE_PATH"])
+    probe = os.path.join(data_dir, ".healthz-%s" % uuid.uuid4().hex)
+    try:
+        with open(probe, "w") as f:
+            f.write("ok")
+        os.remove(probe)
+        res["data_dir"] = "writable"
+    except OSError as e:
+        res["data_dir"] = type(e).__name__
+        res["status"] = "fail"
+    if os.path.isdir(static_path) and os.access(static_path, os.W_OK):
+        res["static_dir"] = "writable"
+    else:
+        res["static_dir"] = "missing or read-only"
+        res["status"] = "fail"
+    return res

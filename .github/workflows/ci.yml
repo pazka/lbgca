@@ -44,6 +44,12 @@ jobs:
         run: bash scripts/smoke.sh lbgca:smoke ro
       - name: legacy box compose (root, bind mounts, port 80; data kept across restart/re-create)
         run: bash scripts/smoke.sh lbgca:smoke legacy
+      - name: hosh-deploy compose (user 10001, read-only, lbgca-data at /data, PORT 8000, POST_DEPLOY)
+        run: bash scripts/smoke.sh lbgca:smoke template
+      - name: cutover rehearsal (legacy data -> lbgca-data, same sha256; rollback to legacy)
+        run: bash scripts/smoke.sh lbgca:smoke cutover
+      - name: box register check (hosh-deploy register simulation)
+        run: bash scripts/check-register.sh
 
   ihm:
     name: ihm build

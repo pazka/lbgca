@@ -20,6 +20,9 @@ docker run --rm -v "$PWD/server:/src:ro" lbgca:smoke \
   sh -c 'mkdir /w && cp -r /src/app /src/tests /w/ && cd /w && python -m unittest discover -s tests -v'
 bash scripts/smoke.sh lbgca:smoke          # mode ro (default)
 bash scripts/smoke.sh lbgca:smoke legacy   # the box's legacy compose
+bash scripts/smoke.sh lbgca:smoke template # the hosh-deploy compose (CI only: fixed names lbgca / lbgca-data)
+bash scripts/smoke.sh lbgca:smoke cutover  # DEPLOY.md §5 rehearsal (CI only)
+bash scripts/check-register.sh             # what `hosh-deploy register` validates on the box
 
 # next Python before Dependabot's PR lands
 sed 's/python:3.12-slim/python:3.14-slim/' server/Dockerfile | docker build -f - -t lbgca:next server
@@ -35,12 +38,14 @@ check: the images are not in git, `scripts/ihm-stub-assets.sh` puts placeholders
 
 ## What is covered
 
-`server/tests/test_api.py` (17 tests, stdlib, production config, temp DB): boot text with the session
+`server/tests/test_api.py` (22 tests, stdlib, production config, temp DB): boot text with the session
 count, JSON 404, DB schema, signup, login-creates-account and **the exact `/session` body the front reads**
 (`connected`, `username`, …) with the cookie flags, login without password (and legacy accounts that had
 one), no password stored, logout, profile read/edit, order create / edit / validate / delete, order routes
 need a session, cannot edit or delete another user's order, cannot edit a validated order, orders of a user,
-public order list.
+public order list; `/healthz` (exact body, loopback Host, HEAD, 503 without database); env layout (defaults =
+legacy paths, `DATA_DIR`/`STATIC_DIR` fresh volume without `init_database.db`, an existing database is never
+replaced).
 
 `scripts/smoke.sh <image> <mode>`: the built image, then boot, 404, login body, profile, order, order edit,
 public list, logout, database file on the volume, no tracebacks. Modes:
@@ -49,6 +54,15 @@ public list, logout, database file on the volume, no tracebacks. Modes:
   SETUID/NET_BIND_SERVICE, bind mounts `./app/database` + `.docker/static`, container port 80). Every image must
   keep passing it until the hosh-deploy cutover. Also proves the data (orders, accounts, server-side sessions)
   survives `compose restart` and `down`/`up`.
+- `template`: `docker-compose.example.yml` + `.env.example` as `/srv/lbgca` on the box (user 10001, read-only
+  rootfs, volume `lbgca-data` at `/data`, PORT 8000), checked like hosh-deploy does (healthy, non-root,
+  read-only, loopback `/healthz` without Host header), then the flow, `POST_DEPLOY` (`server/app/smoke.py`,
+  leaves no order), data kept across restart/re-create, rootfs not writable.
+- `cutover`: legacy with data → stop → the DEPLOY.md §5 data move → same `database.db` sha256 in `lbgca-data`
+  → template serves the data + `POST_DEPLOY` → rollback to legacy, data intact.
+
+`release.yml` runs the unit tests, `check-register.sh` and the `legacy` + `template` smoke on the candidate
+image before pushing anything.
 
 ## Changes and upgrades (2026-10-19)
 
@@ -70,5 +84,6 @@ public list, logout, database file on the volume, no tracebacks. Modes:
 ## Known issues (kept)
 
 - `GET /orders` needs no session and returns every order with its user's profile (by design, joke site).
-- Image runs as root; SQLAlchemy is a transitive, unpinned dependency.
+- Image default user is root (the legacy compose needs it); the hosh-deploy compose runs it as 10001.
+- SQLAlchemy is a transitive, unpinned dependency.
 - `server/identifier.sqlite` is committed (not read by this work).

@@ -1,14 +1,14 @@
 import json
 import logging
 
-from flask import Flask, request, Response
+from flask import Flask, request, Response, jsonify
 from flask_cors import CORS
 from app import config
 
 from app.models import init_db, prepare_db
 from app.services import init_services, create_account, create_session, remove_session, fetch_session, check_session, \
     fetch_current_user, fetch_user, fetch_session_nb, edit_account, create_order, get_user_orders, get_orders, \
-    validate_order, edit_order, create_account_if_not_exist, delete_order
+    validate_order, edit_order, create_account_if_not_exist, delete_order, health
 from app.utils import ServerKnownError, ClientKnownError
 
 logging.getLogger('flask_cors').level = logging.DEBUG
@@ -54,6 +54,13 @@ if not app.config['DEBUG']:
 @app.route("/")
 def test():
     return "The app is running ! " + str(fetch_session_nb()) + " connected !"
+
+
+@app.route("/healthz", methods=['GET'])
+def healthz():
+    # Box contract: 200 {"status":"ok"} only when the database answers and the data dir is writable.
+    body = health()
+    return jsonify(body), (200 if body["status"] == "ok" else 503)
 
 
 @app.route("/signup", methods=['POST'])
