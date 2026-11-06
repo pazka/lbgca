@@ -1,0 +1,47 @@
+# lbgca API on the hosh.it box (no secrets here). On the box it becomes /srv/lbgca/docker-compose.yml,
+# validated and pinned by `hosh-deploy register` (any later change needs a re-register).
+# Every site-specific value comes from lbgca.env (interpolation AND container env).
+# Box standard (hosh-migration 11-BOX-STANDARD.md): published on a LOOPBACK port only; the edge
+# Traefik (host network, file provider) routes api-lbgca.hosh.it to it (route rendered by hosh-deploy from
+# deploy/traefik-route.yml.tmpl).
+# hosh-deploy refuses: root user, writable rootfs, missing cap_drop ALL / no-new-privileges /
+# healthcheck, privileged, host network/pid/ipc, devices, bind mounts, non-loopback ports.
+# The same image also still runs under the LEGACY box compose (root, port 80, bind mounts): see DEPLOY.md.
+name: lbgca            # fixed compose project name (whatever the checkout dir)
+services:
+  lbgca:
+    image: ${APP_IMAGE:-ghcr.io/pazka/lbgca:latest}
+    container_name: lbgca
+    restart: unless-stopped
+    env_file: ./lbgca.env          # chmod 600
+    environment:                   # the template layout (the image defaults are the legacy one)
+      PORT: "8000"
+      DATA_DIR: /data              # database.db (SQLite: accounts, orders, server-side sessions)
+      STATIC_DIR: /data/static
+    volumes:
+      - lbgca-data:/data           # ALL state lives here (backed up monthly with /var/lib/docker/volumes)
+    # --- hardening (box standard) ---
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    user: "10001:10001"
+    pids_limit: 128
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=4).status == 200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "5" }
+    ports:
+      - "${APP_BIND:-127.0.0.1:9141}:8000"   # loopback only — never 0.0.0.0
+
+volumes:
+  lbgca-data:
+    name: lbgca-data       # exact docker volume name
