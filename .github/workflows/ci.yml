@@ -45,7 +45,7 @@ jobs:
   ihm:
     name: ihm build
     runs-on: ubuntu-latest
-    container: node:20-alpine
+    container: node:26.13.0-alpine@sha256:8996bb5821d62a8fd9bb27c1cb07462f3fdce6e47d640c6a881ead0b064ce216 # Node 26 LTS (CVE-2026-111497; 20 is EOL)
     # Compile check: images are not in git, placeholders stand in for them (scripts/ihm-stub-assets.sh).
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
