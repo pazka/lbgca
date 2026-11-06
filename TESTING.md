@@ -18,7 +18,8 @@ The image copies `config_prod.py` over `config.py`; tests use that production co
 docker build -t lbgca:smoke server
 docker run --rm -v "$PWD/server:/src:ro" lbgca:smoke \
   sh -c 'mkdir /w && cp -r /src/app /src/tests /w/ && cd /w && python -m unittest discover -s tests -v'
-bash scripts/smoke.sh lbgca:smoke
+bash scripts/smoke.sh lbgca:smoke          # mode ro (default)
+bash scripts/smoke.sh lbgca:smoke legacy   # the box's legacy compose
 
 # next Python before Dependabot's PR lands
 sed 's/python:3.12-slim/python:3.14-slim/' server/Dockerfile | docker build -f - -t lbgca:next server
@@ -29,7 +30,7 @@ sed 's/python:3.12-slim/python:3.14-slim/' server/Dockerfile | docker build -f -
 ## CI (`.github/workflows/ci.yml`)
 
 PRs, `main`, `agent/**`, all blocking: `server tests (python 3.12|3.14)`; `container smoke` (builds
-`server/`, runs `scripts/smoke.sh` with a read-only rootfs and the compose volumes); `ihm build` (compile
+`server/`, runs `scripts/smoke.sh` in every mode below); `ihm build` (compile
 check: the images are not in git, `scripts/ihm-stub-assets.sh` puts placeholders at the imported paths).
 
 ## What is covered
@@ -41,9 +42,13 @@ one), no password stored, logout, profile read/edit, order create / edit / valid
 need a session, cannot edit or delete another user's order, cannot edit a validated order, orders of a user,
 public order list.
 
-`scripts/smoke.sh`: the built image, read-only rootfs + `cap_drop ALL` + `no-new-privileges`, database and
-static volumes as in `docker-compose.yml`: boot, 404, login body, profile, order, order edit, public list,
-logout, database file on the volume, no tracebacks.
+`scripts/smoke.sh <image> <mode>`: the built image, then boot, 404, login body, profile, order, order edit,
+public list, logout, database file on the volume, no tracebacks. Modes:
+- `ro`: read-only rootfs + `cap_drop ALL` + `no-new-privileges`, database and static named volumes.
+- `legacy`: the box's legacy compose verbatim (`scripts/compose/legacy-box.yml`: root, `cap_add` CHOWN/SETGID/
+  SETUID/NET_BIND_SERVICE, bind mounts `./app/database` + `.docker/static`, container port 80). Every image must
+  keep passing it until the hosh-deploy cutover. Also proves the data (orders, accounts, server-side sessions)
+  survives `compose restart` and `down`/`up`.
 
 ## Changes and upgrades (2026-10-19)
 
