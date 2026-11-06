@@ -27,9 +27,12 @@ SECRET_KEY = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_SAMESITE = "Lax"
 
-# Connect to the database
-INIT_DATABASE_PATH = os.path.join(basedir, 'database/init_database.db')
-DATABASE_PATH = os.path.join(basedir, 'database/database.db')
+# Connect to the database. DATA_DIR defaults to the legacy bind mount (/app/database); the hosh-deploy
+# compose sets DATA_DIR=/data (named volume lbgca-data). database.db is created from init_database.db when
+# present, otherwise empty (fresh volume).
+DATA_DIR = os.environ.get("DATA_DIR") or os.path.join(basedir, 'database')
+INIT_DATABASE_PATH = os.path.join(DATA_DIR, 'init_database.db')
+DATABASE_PATH = os.path.join(DATA_DIR, 'database.db')
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_PATH
 
 SESSION_PERMANENT = True

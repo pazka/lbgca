@@ -11,7 +11,9 @@ my_app = None
 
 def prepare_db(app):
     global my_app
-    if path.exists(app.config['DATABASE_PATH']) is False:
+    # An existing database is never touched. A new one starts from init_database.db when there is one
+    # (legacy box layout), otherwise SQLAlchemy creates it empty (fresh lbgca-data volume).
+    if path.exists(app.config['DATABASE_PATH']) is False and path.exists(app.config['INIT_DATABASE_PATH']):
         shutil.copyfile(app.config['INIT_DATABASE_PATH'], app.config['DATABASE_PATH'])
     my_app = app
     app.config['SESSION_SQLALCHEMY'] = db
