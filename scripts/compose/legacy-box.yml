@@ -1,0 +1,14 @@
+# The box's LEGACY compose for lbgca (/root/hosh-deploy/lbgca/docker-compose.yml), copied verbatim except
+# the image and host port, which come from scripts/smoke.sh. It must keep working with every new image
+# until the cutover to hosh-deploy (DEPLOY.md): root user, bind mounts, port 80 in the container.
+services:
+  lbgca:
+    image: ${LBGCA_IMAGE:?set by scripts/smoke.sh}
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETGID, SETUID, NET_BIND_SERVICE]
+    restart: unless-stopped
+    volumes:
+      - .docker/static:/app/static
+      - ./app/database:/app/database
+    ports: ["127.0.0.1:${SMOKE_PORT:-8080}:80"]

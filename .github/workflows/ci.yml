@@ -40,7 +40,10 @@ jobs:
           load: true
           push: false
           tags: lbgca:smoke
-      - run: bash scripts/smoke.sh lbgca:smoke
+      - name: hardened (read-only rootfs, named volumes)
+        run: bash scripts/smoke.sh lbgca:smoke ro
+      - name: legacy box compose (root, bind mounts, port 80; data kept across restart/re-create)
+        run: bash scripts/smoke.sh lbgca:smoke legacy
 
   ihm:
     name: ihm build
