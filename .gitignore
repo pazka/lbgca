@@ -9,3 +9,7 @@
 # never commit env files
 .env
 *.env
+
+# visual harness: the baselines are committed, the run output is not
+!visual/baseline/*.png
+visual/out/
