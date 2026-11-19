@@ -212,4 +212,6 @@ phone.close();
 writeFileSync(join(OUT, "report.json"), JSON.stringify(report, null, 2));
 console.log(`\n${report.shots.length} shots, ${report.failures.length} failure(s)`);
 for (const f of report.failures) console.log(`  - ${f.name}: ${f.reason}`);
-process.exit(report.failures.length ? 1 : 0);
+// exit only once stdout is flushed: on a pipe (CI) process.exit() drops what is still queued (VISUAL-PNG lines)
+const code = report.failures.length ? 1 : 0;
+process.stdout.write("", () => process.exit(code));
