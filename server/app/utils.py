@@ -23,7 +23,7 @@ class ServerKnownError(Exception):
         super().__init__()
         self.code = code
         self.message = message
-        self.ex = None
+        self.ex = ex
 
 
 class ClientKnownError(Exception):
@@ -31,7 +31,7 @@ class ClientKnownError(Exception):
         super().__init__()
         self.code = code
         self.message = message
-        self.ex = None
+        self.ex = ex
 
 
 def success_response(data=None):

@@ -201,6 +201,25 @@ no_tracebacks() {
   step "no tracebacks in logs"
   if applogs | grep -E 'Traceback'; then fail "traceback in container log"; fi
 }
+json_logs() {  # logging standard (hosh-management AGENTS.md §11, TESTING.md "Logs"): ro mode, one container
+  step "logs: stdout only JSON lines, one startup line, nothing on stderr, no access log or address"
+  local out err
+  out="$(dk logs "$NAME" 2>/dev/null)"
+  err="$(dk logs "$NAME" 2>&1 >/dev/null)"
+  [ -z "$err" ] || { echo "$err" | head -n 20; fail "the container wrote on stderr"; }
+  printf '%s\n' "$out" | python3 -c '
+import json, sys
+rows = [json.loads(l) for l in sys.stdin.read().splitlines() if l.strip()]
+for r in rows:
+    assert list(r)[:6] == ["ts", "level", "service", "version", "event", "msg"], r
+    assert r["service"] == "lbgca", r
+starts = [r for r in rows if r["event"] == "startup"]
+assert len(starts) == 1, starts
+assert starts[0]["data_dir_writable"] and starts[0]["static_dir_writable"], starts[0]
+assert not [r for r in rows if r["level"] == "error"], rows
+' || fail "log lines are not the JSON standard"
+  if printf '%s' "$out" | grep -E '127\.0\.0\.1|172\.[0-9]+\.|"GET /|"smoke"|pasta'; then fail "address, access line, login name or order body in the log"; fi
+}
 db_sha_legacy() { dk run --rm --network none --entrypoint sha256sum -v "$WORK/app/database:/d:ro" "$IMAGE" /d/database.db | cut -d' ' -f1; }
 db_sha_volume() { dk run --rm --network none --entrypoint sha256sum -v lbgca-data:/d:ro "$IMAGE" /d/database.db | cut -d' ' -f1; }
 
@@ -222,6 +241,7 @@ ro)
   front_flow
   dk exec "$NAME" test -s /app/database/database.db || fail "no database on the volume"
   no_tracebacks
+  json_logs
   ;;
 legacy)
   start_legacy

@@ -65,6 +65,45 @@ public list, logout, database file on the volume, no tracebacks. Modes:
 `release.yml` runs the unit tests, `check-register.sh` and the `legacy` + `template` smoke on the candidate
 image before pushing anything.
 
+## Logs (`server/tests/test_log.py`; hosh-management AGENTS.md §11)
+
+`server/app/jsonlog.py` (standard library only) writes one JSON object per line on stdout: `ts` (UTC, ms), `level`,
+`service` (`lbgca`), `version` (`APP_VERSION`, set by the Dockerfile from release.yml's `ARG VERSION`; `dev`
+otherwise), `event`, `msg`, then the line's fields. `LOG_LEVEL` (else `APP_LOG_LEVEL`) sets the level, default info.
+
+At info the server writes:
+- `startup` (each gunicorn worker once the app is loaded, `post_worker_init`): `port`, `debug`,
+  `data_dir_writable`, `static_dir_writable`, `log_level`, and the NAMES of the configuration that is set (never
+  a value or a path); `shutdown` (gunicorn master, `on_exit`).
+- `request_failed` (error) for a status >= 500, with `err` (type, message, stack frames, no word "Traceback") of the
+  ORIGINAL exception (`ServerKnownError`/`ClientKnownError` now keep `ex`) and every string value of the request's
+  JSON body replaced by `<hidden>`. The client body is unchanged (the catch-all 500 still returns `str(e)`: contract).
+- `auth_failed` (warn) for a 4xx on `/session` or `/signup`; `request_slow` (warn) above 1 s; every other request
+  and `/healthz` only at debug. Request fields: `req_id` (`X-Request-Id` kept when it is a plain token of at most
+  64 characters, generated otherwise, returned in the answer), `method`, `route` (the Flask rule, never the raw
+  path or query), `status`, `dur_ms`.
+- gunicorn's own records are `server_log` lines (warnings and errors; everything at debug) and flask_cors's are
+  `cors_log` lines (warnings and errors). Their `msg` is only the leading words of the record's template
+  (`safe_msg`: "Invalid request from ip=1.2.3.4: …" -> "Invalid request from ip"): never an address, path or header.
+
+Gunicorn's access log is off (Traefik has the requests; its line holds the client address and the raw path), and so
+are the old `print`s and flask_cors's DEBUG level. Gunicorn's control socket (`gunicornc`, new in gunicorn 25.1) is
+disabled: it is not used, and on the read-only rootfs it only logged "Control server error" at every start (the
+image smoke found it once the log became JSON). Never logged: request bodies (login names, orders), cookies and
+session ids, IPs, raw paths or query strings.
+
+Tests: the line format, level filtering and `LOG_LEVEL`/`APP_LOG_LEVEL`, `ts` in UTC under `TZ=Asia/Tokyo`, config
+names without values, `err` (hidden words, frames), request ids, body values; on the real app (production config):
+a 500 whose message carries the posted values (original exception type, values `<hidden>`, nothing on stderr or
+`wsgi.errors`, client body unchanged), `auth_failed` on `/signup` only, slow request, debug lines by route,
+flask_cors records; gunicorn records (templates only, no access line); and the real server (gunicorn +
+`app/gunicorn.conf.py` on the image's layout, in a subprocess, `TZ=Asia/Tokyo`): the startup line (`assertEqual`
+on its keys and values), a 500 as one `request_failed` line, no access log, `shutdown` and exit 0 on SIGTERM, every
+stdout line a standard JSON line, stderr empty; at `LOG_LEVEL=debug` gunicorn's records (a non-HTTP request
+included) are JSON lines without the address or path. `scripts/smoke.sh` (mode `ro`) checks the built image the same
+way: stdout only JSON lines, one startup line with both dirs writable, no error line, stderr empty, no address,
+access line, login name or order body.
+
 ## Visual use cases (front `ihm/`, harness `visual/`)
 
 Every page and state a visitor of lbgca.hosh.it can reach, shot by `visual/run.sh` at **1400, 1024 and 390 px**

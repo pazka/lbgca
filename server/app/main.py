@@ -1,22 +1,15 @@
 import json
-import logging
+import os
 
 from flask import Flask, request, Response, jsonify
 from flask_cors import CORS
-from app import config
+from app import config, jsonlog
 
 from app.models import init_db, prepare_db
 from app.services import init_services, create_account, create_session, remove_session, fetch_session, check_session, \
     fetch_current_user, fetch_user, fetch_session_nb, edit_account, create_order, get_user_orders, get_orders, \
     validate_order, edit_order, create_account_if_not_exist, delete_order, health
-from app.utils import ServerKnownError, ClientKnownError
-
-logging.getLogger('flask_cors').level = logging.DEBUG
-
-if config.DEBUG is False:
-    print("LBGCA SERVER NO DEBUG")
-else:
-    print("LBGCA SERVER IS DEBUG")
+from app.utils import ServerKnownError, ClientKnownError, static_path
 
 app = Flask(__name__)
 
@@ -26,6 +19,7 @@ cors = CORS(app, resources={
         "origins": app.config["CORS_ORIGINS"]
     }
 }, supports_credentials=True)
+jsonlog.install(app)
 
 prepare_db(app)
 init_services(app)
@@ -33,6 +27,8 @@ init_db(app)
 
 
 def handle_errors(e):
+    # the request_failed line (status >= 500) reports the original exception, not its wrapper
+    jsonlog.remember_exception(e.ex if e.ex is not None else e)
     response = Response()
     response.data = json.dumps({
         "code": e.code,
@@ -49,6 +45,24 @@ app.register_error_handler(ClientKnownError, handle_errors)
 app.register_error_handler(404, lambda e: handle_errors(ServerKnownError("Resource not found", code=404, ex=e)))
 if not app.config['DEBUG']:
     app.register_error_handler(Exception, lambda e: handle_errors(ServerKnownError(str(e), ex=e)))
+
+
+def startup_fields():
+    """Port, debug, writable dirs, level and the NAMES of the configuration that is set (never a value or a path)."""
+    try:
+        port = int(os.environ.get("PORT", "80"))
+    except ValueError:
+        port = None
+    data_dir = os.path.dirname(app.config["DATABASE_PATH"])
+    return {"port": port, "debug": bool(app.config["DEBUG"]), "data_dir_writable": os.access(data_dir, os.W_OK),
+            "static_dir_writable": os.path.isdir(static_path) and os.access(static_path, os.W_OK),
+            "log_level": jsonlog.LOG.level, "config": jsonlog.config_names_set()}
+
+
+def log_startup(logger=None):
+    """The one startup line (called by gunicorn once the worker has loaded the app, see gunicorn.conf.py)."""
+    (logger or jsonlog.LOG).info("startup", "LBGCA SERVER IS DEBUG" if app.config["DEBUG"] else "LBGCA SERVER NO DEBUG",
+                                 **startup_fields())
 
 
 @app.route("/")
@@ -137,6 +151,6 @@ def fetch_users_orders(user_id):
 
 
 if __name__ == "__main__":
-    print("## DEBUG SERVER START")
+    log_startup()
     # Only for debugging while developing
     app.run(app.config['HOST'], app.config['PORT'], app.config)
