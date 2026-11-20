@@ -154,4 +154,3 @@ in a PR that says the visual change is wanted.
 - `GET /orders` needs no session and returns every order with its user's profile (by design, joke site).
 - Image default user is root (the legacy compose needs it); the hosh-deploy compose runs it as 10001.
 - SQLAlchemy is a transitive, unpinned dependency.
-- `server/identifier.sqlite` is committed (not read by this work).

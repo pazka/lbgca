@@ -13,3 +13,8 @@
 # visual harness: the baselines are committed, the run output is not
 !visual/baseline/*.png
 visual/out/
+
+# never commit databases (CLAUDE.md: no *.db / *.sqlite / user data)
+*.db
+*.sqlite
+*.sqlite3
