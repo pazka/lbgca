@@ -87,7 +87,9 @@ At info the server writes:
   (`safe_msg`: "Invalid request from ip=1.2.3.4: …" -> "Invalid request from ip"): never an address, path or header.
 
 Gunicorn's access log is off (Traefik has the requests; its line holds the client address and the raw path), and so
-are the old `print`s and flask_cors's DEBUG level. Never logged: request bodies (login names, orders), cookies and
+are the old `print`s and flask_cors's DEBUG level. Gunicorn's control socket (`gunicornc`, new in gunicorn 25.1) is
+disabled: it is not used, and on the read-only rootfs it only logged "Control server error" at every start (the
+image smoke found it once the log became JSON). Never logged: request bodies (login names, orders), cookies and
 session ids, IPs, raw paths or query strings.
 
 Tests: the line format, level filtering and `LOG_LEVEL`/`APP_LOG_LEVEL`, `ts` in UTC under `TZ=Asia/Tokyo`, config

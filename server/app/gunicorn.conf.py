@@ -18,6 +18,9 @@ keepalive = 5
 threads = 3
 # PORT: 80 for the legacy box compose (default), 8000 for the hosh-deploy compose.
 bind = "0.0.0.0:" + os.environ.get("PORT", "80")
+# gunicorn's admin control socket (gunicornc) is not used here, and on the read-only rootfs it cannot be created
+# under $HOME: it only logged "Control server error" at every start.
+control_socket_disable = True
 
 
 def post_worker_init(worker):

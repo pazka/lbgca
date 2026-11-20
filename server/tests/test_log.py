@@ -374,6 +374,11 @@ class RealServerTest(unittest.TestCase):
         self.assertIn("LOG_LEVEL", starts[0]["config"])
         self.assertIn(("debug", "healthz", "/healthz"), [(r["level"], r["event"], r.get("route")) for r in rows])
         self.assertIn("server_log", [r["event"] for r in rows])      # gunicorn's own records, as JSON lines
+        # no control socket (read-only rootfs in the image: it failed with "Control server error")
+        msgs = [r["msg"] for r in rows]
+        self.assertIn("Control socket disabled", msgs)
+        self.assertNotIn("Control socket listening at", msgs)
+        self.assertFalse([r for r in rows if r["level"] == "error"], out)
         self.assertEqual(rows[-1]["event"], "shutdown")
         for line in out.splitlines():
             self.assertEqual(list(json.loads(line))[:6], HEAD, line)
