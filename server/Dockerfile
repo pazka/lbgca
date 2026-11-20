@@ -14,6 +14,9 @@ COPY ./app/config_prod.py /app/config.py
 # - hosh-deploy compose: user 10001, read-only rootfs, PORT=8000, DATA_DIR=/data, STATIC_DIR=/data/static
 #   on the named volume lbgca-data (a new volume takes /data's owner below, so 10001 can write it).
 RUN install -d -o 10001 -g 10001 -m 750 /data
+# The `version` field of every log line (release.yml passes the release tag; a local build says "dev").
+ARG VERSION=dev
+ENV APP_VERSION=${VERSION}
 
 EXPOSE 80 8000
 
