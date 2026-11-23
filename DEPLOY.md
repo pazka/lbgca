@@ -74,7 +74,7 @@ Box smoke harness: update `svc_lbgca` in `/home/pazka/MIGRATION/scripts/smoke.sh
 
 | Item | Value |
 |---|---|
-| Image | `ghcr.io/pazka/lbgca:vX.Y.Z` (python:3.14-slim, gunicorn, Flask, SQLite) |
+| Image | `ghcr.io/pazka/lbgca:vX.Y.Z` (python:3.15-slim, gunicorn, Flask, SQLite) |
 | Upstream | container :8000 → `127.0.0.1:9141` |
 | Edge | `/root/hosh-deploy/edge/traefik/dynamic/lbgca.yml` (router `lbgca@file`, resolver `le`, HSTS) |
 | Volume | docker volume `lbgca-data` → `/data` (in the monthly restic golden backup) |
