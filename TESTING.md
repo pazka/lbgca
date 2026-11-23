@@ -25,14 +25,14 @@ bash scripts/smoke.sh lbgca:smoke cutover  # DEPLOY.md §5 rehearsal (CI only)
 bash scripts/check-register.sh             # what `hosh-deploy register` validates on the box
 
 # next Python before Dependabot's PR lands
-sed 's/python:3.12-slim/python:3.14-slim/' server/Dockerfile | docker build -f - -t lbgca:next server
+sed 's/python:3.15-slim/python:3.16-slim/' server/Dockerfile | docker build -f - -t lbgca:next server
 ```
 
 (Windows Git Bash: prefix `docker run` with `MSYS_NO_PATHCONV=1`, mount `"$(cygpath -w "$PWD/server")"`.)
 
 ## CI (`.github/workflows/ci.yml`)
 
-PRs, `main`, `agent/**`, all blocking: `server tests (python 3.12|3.14)`; `container smoke` (builds
+PRs, `main`, `agent/**`, all blocking: `server tests (python 3.12|3.14|3.15)`; `container smoke` (builds
 `server/`, runs `scripts/smoke.sh` in every mode below); `ihm build` (compile
 check: the images are not in git, `scripts/ihm-stub-assets.sh` puts placeholders at the imported paths);
 `visual regression` (below).
@@ -187,6 +187,12 @@ in a PR that says the visual change is wanted.
   Session cookie is now `Secure; SameSite=Lax` in production (the site is HTTPS only).
 - `gunicorn` pinned in `server/app/requirements.txt`; duplicate `server/requirements.txt` removed;
   `ihm/package-lock.json` re-synced (adds the missing `typescript` entry only).
+
+## Python 3.15 (2026-11-23)
+
+- **Image on `python:3.15-slim`** (supersedes Dependabot #17). No pin in `server/app/requirements.txt` changes.
+  39/39 server tests on 3.15.2, with the same warnings as on 3.14.10 (`-W default`). The CI matrix gains 3.15
+  and keeps 3.12 and 3.14; the test job of `release.yml` runs on 3.15, the image's Python.
 
 ## Known issues (kept)
 
