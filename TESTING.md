@@ -39,8 +39,9 @@ check: the images are not in git, `scripts/ihm-stub-assets.sh` puts placeholders
 
 ## What is covered
 
-`server/tests/test_api.py` (22 tests, stdlib, production config, temp DB): boot text with the session
-count, JSON 404, DB schema, signup, login-creates-account and **the exact `/session` body the front reads**
+`server/tests/test_api.py` (24 tests, stdlib, production config, temp DB): boot text with the session
+count, JSON 404, Flask's own client errors keep their 4xx (wrong method 405, not JSON 415, broken JSON 400; other
+errors are still the catch-all 500), DB schema, signup, login-creates-account and **the exact `/session` body the front reads**
 (`connected`, `username`, …) with the cookie flags, login without password (and legacy accounts that had
 one), no password stored, logout, profile read/edit, order create / edit / validate / delete, order routes
 need a session, cannot edit or delete another user's order, cannot edit a validated order, orders of a user,

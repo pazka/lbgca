@@ -3,6 +3,7 @@ import os
 
 from flask import Flask, request, Response, jsonify
 from flask_cors import CORS
+from werkzeug.exceptions import HTTPException
 from app import config, jsonlog
 
 from app.models import init_db, prepare_db
@@ -43,6 +44,9 @@ def handle_errors(e):
 app.register_error_handler(ServerKnownError, handle_errors)
 app.register_error_handler(ClientKnownError, handle_errors)
 app.register_error_handler(404, lambda e: handle_errors(ServerKnownError("Resource not found", code=404, ex=e)))
+# A client error that Flask itself raises (wrong method, body that is not JSON, broken JSON...) keeps its own 4xx
+# status: without this, the catch-all below turned it into a 500 (hosh-management#50). Same JSON body as the 404.
+app.register_error_handler(HTTPException, lambda e: handle_errors(ServerKnownError(str(e), code=e.code, ex=e)))
 if not app.config['DEBUG']:
     app.register_error_handler(Exception, lambda e: handle_errors(ServerKnownError(str(e), ex=e)))
 
