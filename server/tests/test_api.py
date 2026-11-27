@@ -75,6 +75,26 @@ class ApiTest(unittest.TestCase):
         self.assertEqual((r.status_code, r.content_type), (404, "application/json"))
         self.assertEqual(body(r), error(404, "ServerKnownError", "Resource not found"))
 
+    def test_client_errors_raised_by_flask_keep_their_4xx_status(self):
+        # hosh-management#50: these were answered 500 by the catch-all handler (and logged as request_failed)
+        cases = [
+            (self.c.put(BASE + "/session", json={"login": "x"}), 405, "405 Method Not Allowed"),
+            (self.c.post(BASE + "/"), 405, "405 Method Not Allowed"),
+            (self.c.get(BASE + "/order"), 405, "405 Method Not Allowed"),
+            (self.c.post(BASE + "/session", data="login=x"), 415, "415 Unsupported Media Type"),
+            (self.c.post(BASE + "/session", data="{bad", content_type="application/json"), 400, "400 Bad Request"),
+        ]
+        for r, code, start in cases:
+            self.assertEqual((r.status_code, r.content_type), (code, "application/json"), start)
+            b = body(r)
+            self.assertEqual((b["code"], b["name"]), (code, "ServerKnownError"), start)
+            self.assertTrue(b["error"].startswith(start + ": "), b["error"])
+
+    def test_other_errors_are_still_a_500(self):
+        # a missing field is not a Flask client error: unchanged, still the catch-all 500 with str(e)
+        r = self.post("/session", {"logn": "x"})
+        self.assertEqual((r.status_code, body(r)), (500, error(500, "ServerKnownError", "'login'")))
+
     def test_schema(self):
         con = sqlite3.connect(cfg.DATABASE_PATH)
         try:
